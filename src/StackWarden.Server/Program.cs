@@ -42,7 +42,7 @@ namespace StackWarden.Server
 #else
             var services = new ServiceBase[]
             {
-                new ServerService(LogManager.GetLogger(typeof(ServerService)), monitors.ToArray())
+                new StackWardenServerService(LogManager.GetLogger(typeof(StackWardenServerService)), monitors.ToArray())
             };
 
             ServiceBase.Run(services);

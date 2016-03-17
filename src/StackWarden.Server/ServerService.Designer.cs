@@ -1,6 +1,6 @@
 ﻿namespace StackWarden.Server
 {
-    partial class ServerService
+    partial class StackWardenServerService
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,8 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.ServiceName = "Service1";
+            // 
+            // StackWardenServerService
+            // 
+            this.ServiceName = "StackWarden.Server";
+
         }
 
         #endregion

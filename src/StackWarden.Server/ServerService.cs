@@ -7,17 +7,18 @@ using StackWarden.Monitoring;
 
 namespace StackWarden.Server
 {
-    public partial class ServerService : ServiceBase
+    public partial class StackWardenServerService : ServiceBase
     {
         private readonly ILog _log;
         private readonly List<IMonitor> _monitors;
 
-        public ServerService(ILog log, IMonitor[] monitors)
+        public StackWardenServerService(ILog log, IMonitor[] monitors)
         {
             _log = log.ThrowIfNull(nameof(log));
             _monitors = new List<IMonitor>(monitors ?? new IMonitor[0]);
 
             InitializeComponent();
+            ServiceName = "StackWarden.Server";
         }
 
         protected override void OnStart(string[] args)
