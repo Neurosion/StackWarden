@@ -265,7 +265,6 @@
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="Content\fonts\FontAwesome.otf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff2" />
-    <None Include="Project_Readme.html" />
     <Content Include="Content\scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
