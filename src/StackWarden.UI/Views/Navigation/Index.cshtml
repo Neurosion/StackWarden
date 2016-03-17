@@ -1,0 +1,27 @@
+﻿@model StackWarden.UI.Models.NavigationCategories
+
+<ul class="nav" id="main-menu">
+    <li>
+        <div class="user-img-div">
+            <img src="http://placehold.it/100x100" class="img-thumbnail" />
+
+            <div class="inner-text">
+                @User.Identity.Name
+            </div>
+        </div>
+
+    </li>
+
+    <li>
+        <a href="@Url.Action("Dashboard", "Home")"><i class="fa fa-dashboard "></i>Dashboard</a>
+    </li>
+
+    @foreach (var currentCategory in Model.Categories)
+    {
+        <li>
+            <a href="@Url.Action(currentCategory, "Home")">
+                <i class="fa fa-@Constants.Icons.Map[currentCategory]"></i>@currentCategory
+             </a>
+        </li>
+    }
+</ul>

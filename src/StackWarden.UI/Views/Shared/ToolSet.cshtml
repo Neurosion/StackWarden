@@ -1,0 +1,16 @@
+﻿@using StackWarden.Core.Extensions
+@using StackWarden.UI
+@model StackWarden.UI.Models.ToolSet
+<div class="panel panel-primary">
+    <div class="panel-heading">@Model.Name</div>
+    <div class="panel-body">
+        <p>@Model.Description</p>
+        @foreach (var currentTool in Model.Tools)
+        {
+            <button class="btn btn-primary" title="@($"{currentTool.Description}")">
+                <i class="fa fa-@(Constants.Icons.Map.Get(currentTool.Name, Constants.Icons.Default))"></i>
+                @currentTool.Name
+            </button>
+        }
+    </div>
+</div>

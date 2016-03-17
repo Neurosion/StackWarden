@@ -1,0 +1,201 @@
+﻿#monitorResults {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+#monitorResults * {
+    transition: all 1s ease;
+}
+
+.resultContainer {
+    position: relative;
+    width: 250px;
+    margin: 2px;
+    text-align: center;
+    font-weight: bold;
+    font-family: Verdana;
+    font-size: 8pt;
+}
+
+.statusContainer {
+    position:relative;
+    padding: 5px;
+    border: solid 1px #888888;
+}
+
+.smallIcon {
+    font-size: 15px;
+}
+
+.mediumIcon {
+    font-size: 20px;
+}
+
+.largeIcon{
+    font-size: 30px;
+}
+
+.statusIcon {
+    position:absolute;
+    right: 3px;
+    top: 3px;
+}
+
+.typeIcon {
+    position:absolute;
+    left: 3px;
+    top: 3px;
+}
+
+.statusMessage {
+    position:absolute;
+    top: calc(100% - 1px);
+    background: #000000;
+    color: #FFF;
+    text-align:left;
+    margin: 0px;
+    padding: 3px;
+    width: 100%;
+    height: 30px;
+    overflow: hidden;
+}
+
+.controlPanel {
+    position: absolute;
+    top: calc(100% - 1px);
+    background: rgb(35, 96, 152);
+    color: #fff;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+    border: solid 1px #888888;
+    z-index: 10 !important;
+
+    -webkit-filter: unset;
+    -moz-filter: unset;
+    -ms-filter: unset;
+    filter: unset;
+    transition: all 1s ease;
+}
+
+.toggleContainer {
+    position:absolute;
+    width: 100%;
+    top: 0px;
+}
+
+.toggleContainer .smallIcon {
+    color: #ddd;
+    position: absolute;
+    top: 3px;
+}
+
+.subPanel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: all .5s ease-in-out;
+    overflow: hidden;
+    padding-top: 20px;
+}
+
+.toolsPanel {
+    left: 0;
+    border-right: solid 1px #888888;
+}
+
+.toolsPanel .smallIcon:nth-of-type(1) {
+    position:absolute;
+    right: 15px;
+}
+
+.toolsPanel .smallIcon:nth-of-type(2) {
+    position:absolute;
+    right: 5px;
+}
+
+.detailsPanel {
+    right: 0;
+    border-left: solid 1px #888888;
+}
+
+.detailsPanel .smallIcon:nth-of-type(1) {
+    position:absolute;
+    left: 5px;
+}
+
+.detailsPanel .smallIcon:nth-of-type(2) {
+    position:absolute;
+    left: 15px;
+}
+
+.detailsPanel table {
+    padding: 0;
+    margin: 0;
+    text-align:left;
+    font-weight: normal;
+    width: 97%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.detailData {
+    line-height: 15px;
+}
+
+.detailName {
+    width: 40%;
+    text-align:right;
+    text-decoration: underline;
+}
+
+.detailName:after{
+    content:':';
+}
+
+.detailValue {
+    padding-left: 5px;
+    width: 70%;
+}
+
+.collapsedVertical {
+    height: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.collapsedHorizontal {
+    width: 0px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.stale {
+    -webkit-filter: grayscale(100%);
+    -moz-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    filter: gray;
+}
+
+.normal {
+    background: #00AA00;
+}
+
+.warning {
+    background: #ff6a00;
+    border-bottom: none;
+}
+
+.error {
+    background: #AA0000;
+    color: #FFFFFF;
+    border-bottom: none;
+}
+
+@media (max-width: 499px){
+    .resultContainer {
+        width: 100%;
+    }
+}

@@ -1,0 +1,16 @@
+Monitors
+	MSMQ
+		See total message velocity (msg/minute)
+		See total message acceleration (msg/minute²)
+	Types to create
+		Pull request list
+		Deploy statuses
+	Add ability to dynamically load/unload monitors by changing configuration files on disk
+Dashboard
+	Add desktop notifications for warning/error/stale monitor
+	Determine how to group monitors and/or aggregate their data into a single monitor result
+Tools
+	Figure out how to pair them with/without monitors
+		Tags
+			Need to determine if explicit matching is required
+			 ex: monitor is service; tool is service, wangdoodle; do they match?
