@@ -6,7 +6,7 @@
             <img src="http://placehold.it/100x100" class="img-thumbnail" />
 
             <div class="inner-text">
-                @User.Identity.Name
+                @(User?.Identity?.Name ?? "")
             </div>
         </div>
 
