@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Timers;
 using log4net;
 using StackWarden.Core;
@@ -65,7 +66,7 @@ namespace StackWarden.Monitoring
                 return;
 
             _timer.Enabled = true;
-            Update();
+            Task.Run(() => HandleResult(Update()));
         }
 
         public void Stop()
