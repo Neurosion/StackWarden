@@ -3,8 +3,8 @@ Application stack resource monitors and dashboard.
 
 ### Monitors
 - Monitor a resource and report its state to the configured handlers.
-- Tags are currently not used, but are optional
-- Display name is optional for all configuration
+- Tags are optional, will be used for result grouping, but are currently not currently used.
+- Display name is optional for all configurations.
 
 ##### Http Availability 
 - Attempts to connect to an http url
@@ -91,9 +91,9 @@ Application stack resource monitors and dashboard.
 }
 </pre>
 - Optional Configuration
-  - WarningThreshold: A ping equal to or higher than this will trigger a warning state.
+  - WarningThreshold: A total message count equal to or higher than this will trigger a warning state.
     - <tt>"WarningThreshold": 50</tt>
-  - ErrorThreshold: A ping equal to or higher than this will trigger an error state.
+  - ErrorThreshold: A total message count equal to or higher than this will trigger an error state.
     - <tt>"ErrorThreshold": 50</tt>
 
 ##### Windows Service State
@@ -118,7 +118,7 @@ Application stack resource monitors and dashboard.
 </pre>
 
 ### Monitor Result Handlers
-- Take results reported by monitors and forward them to the notification method and target they represent.
+- Take results reported by monitors and forward them via the notification method and target they represent.
 - The configuration files are named "YourHandlerNameHere.handlerconfig"
 - The name used in the file name, before the extension, is used in the monitor configuration files to reference that handler.
 
