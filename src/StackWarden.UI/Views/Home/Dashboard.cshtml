@@ -74,7 +74,32 @@
                 self.staleAfter.subscribe(function (newValue) {
                     setTimeout(function () {
                         self.lastUIRefresh(new Date());
-                    }, self.staleAfter() - new Date() + 50);
+                    }, newValue - new Date() + 50);
+                });
+            }
+
+            function sortResults(results) {
+                var stateWeight = {
+                    '@normal': 0,
+                    '@warning': 1,
+                    '@error': 2
+                };
+
+                results.sort(function (left, right) {
+                    var leftState = stateWeight[left.state()];
+                    var rightState = stateWeight[right.state()];
+                    var stateComparisonResult = leftState < rightState
+                                                    ? 1
+                                                    : rightState < leftState
+                                                        ? -1
+                                                        : 0;
+
+                    if (stateComparisonResult !== 0)
+                        return stateComparisonResult;
+
+                    var nameComparisonResult = left.name().localeCompare(right.name());
+
+                    return nameComparisonResult;
                 });
             }
 
@@ -87,13 +112,14 @@
                 });
 
                 self.results = ko.observableArray(convertedItems);
+
+                sortResults(self.results);
             };
 
             var allResults = JSON.parse('@(Newtonsoft.Json.JsonConvert.SerializeObject(Model))');
             var monitorResults = new MonitorResultListModel(allResults);
-            
+
             var $notificationHub = $.connection.notificationHub;
-            
             $notificationHub.client.addMonitorResult = function (newResult) {
                 var modelResult = new MonitorResultModel(newResult);
                 var didFind = false;
@@ -111,9 +137,11 @@
                         item.icon(modelResult.icon());
                     }
                 });
-                
+
                 if (!didFind)
                     monitorResults.results.push(modelResult);
+
+                sortResults(monitorResults.results);
             };
 
             ko.applyBindings(monitorResults);
