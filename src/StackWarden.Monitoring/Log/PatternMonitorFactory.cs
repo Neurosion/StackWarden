@@ -14,6 +14,7 @@ namespace StackWarden.Monitoring.Log
         {
             public string DirectoryPath { get; set; }
             public string FileNamePattern { get; set; }
+            public string LogLineTimestampPattern { get; set; }
             public Dictionary<string, string> PatternSeverities { get; set; }
         }
 
@@ -29,7 +30,10 @@ namespace StackWarden.Monitoring.Log
             var instance = new PatternMonitor(log, config.DirectoryPath);
 
             if (!string.IsNullOrWhiteSpace(config.FileNamePattern))
-                instance.FileNamePattern = config.FileNamePattern;
+                instance.FileNamePattern = new Regex(config.FileNamePattern, RegexOptions.Compiled);
+
+            if (!string.IsNullOrWhiteSpace(config.LogLineTimestampPattern))
+                instance.LogLineTimestampPattern = new Regex(config.LogLineTimestampPattern, RegexOptions.Compiled);
 
             config.PatternSeverities.ThrowIfNullOrEmpty(nameof(config.PatternSeverities));
 

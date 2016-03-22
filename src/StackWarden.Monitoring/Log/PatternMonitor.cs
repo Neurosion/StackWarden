@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +18,8 @@ namespace StackWarden.Monitoring.Log
         private readonly Dictionary<string, int> _lastProcessedLine = new Dictionary<string, int>();
         private DateTime _lastUpdatedOn = DateTime.Now;
 
-        public string FileNamePattern { get; set; }
+        public Regex FileNamePattern { get; set; }
+        public Regex LogLineTimestampPattern { get; set; }
         public Dictionary<Regex, SeverityState> PatternSeverities { get; } = new Dictionary<Regex, SeverityState>();
 
         public PatternMonitor(ILog log, string logDirectoryPath)
@@ -38,7 +38,7 @@ namespace StackWarden.Monitoring.Log
             try
             {
                 foreach (var currentFile in Directory.GetFiles(_logDirectoryPath)
-                                                     .Where(x => string.IsNullOrWhiteSpace(FileNamePattern) || Regex.IsMatch(x, FileNamePattern))
+                                                     .Where(x => FileNamePattern?.IsMatch(x) ?? false)
                                                      .Select(x => new FileInfo(x))
                                                      .Where(x => x.LastWriteTime >= _lastUpdatedOn))
                 {
@@ -65,6 +65,22 @@ namespace StackWarden.Monitoring.Log
 
                                 if (index < _lastProcessedLine[fullFileName])
                                     return;
+
+                                if (LogLineTimestampPattern != null)
+                                {
+                                    var match = LogLineTimestampPattern.Match(currentLine);
+
+                                    if (match.Success)
+                                    {
+                                        DateTime parsedDate;
+
+                                        if (DateTime.TryParse(match.Value, out parsedDate))
+                                        {
+                                            if (parsedDate < _lastUpdatedOn)
+                                                return;
+                                        }
+                                    }
+                                }
 
                                 foreach (var currentPair in PatternSeverities.Where(x => x.Key.IsMatch(currentLine)))
                                 {
