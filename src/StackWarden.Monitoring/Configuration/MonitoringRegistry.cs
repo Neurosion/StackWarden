@@ -23,6 +23,7 @@ namespace StackWarden.Monitoring.Configuration
             RegisterMonitorFactory<Machine.AvailabilityMonitorFactory>(configPath);
             RegisterMonitorFactory<MessageQueue.QueueSizeMonitorFactory>(configPath);
             RegisterMonitorFactory<Service.StateMonitorFactory>(configPath);
+            RegisterMonitorFactory<Log.PatternMonitorFactory>(configPath);
 
             ForConcreteType<CompositeMonitorFactory>().Configure
                                                       .Singleton()

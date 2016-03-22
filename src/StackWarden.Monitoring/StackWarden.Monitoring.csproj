@@ -77,6 +77,7 @@
     <Compile Include="Configuration\IMonitorResultHandlerFactory.cs" />
     <Compile Include="IMonitorService.cs" />
     <Compile Include="Log\PatternMonitor.cs" />
+    <Compile Include="Log\PatternMonitorFactory.cs" />
     <Compile Include="Machine\AvailabilityMonitorFactory.cs" />
     <Compile Include="Configuration\MonitorConfigurationDrivenFactory.cs" />
     <Compile Include="Configuration\CompositeMonitorFactory.cs" />
