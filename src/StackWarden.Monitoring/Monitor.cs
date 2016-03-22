@@ -13,8 +13,9 @@ namespace StackWarden.Monitoring
     public abstract class Monitor : IMonitor
     {
         private readonly Timer _timer;
-        //private readonly List<IMonitorResultHandler> _resultNotifiers;
         private double _interval;
+        private bool _isProcessing;
+        private object _isProcesingLock = new object();
 
         public event Action<MonitorResult> Updated;
 
@@ -57,7 +58,7 @@ namespace StackWarden.Monitoring
             Interval = Constants.DefaultInterval;
 
             _timer = new Timer(Interval);
-            _timer.Elapsed += (s, e) => HandleResult(Update());
+            _timer.Elapsed += (s, e) => HandleUpdate();
         }
 
         public void Start()
@@ -66,7 +67,7 @@ namespace StackWarden.Monitoring
                 return;
 
             _timer.Enabled = true;
-            Task.Run(() => HandleResult(Update()));
+            Task.Run(() => HandleUpdate());
         }
 
         public void Stop()
@@ -74,9 +75,9 @@ namespace StackWarden.Monitoring
             _timer.Enabled = false;
         }
 
-        private MonitorResult Update()
+        protected MonitorResult CreateResult()
         {
-            var result = new MonitorResult
+            return new MonitorResult
             {
                 SourceType = GetType(),
                 SourceName = Name,
@@ -84,6 +85,27 @@ namespace StackWarden.Monitoring
                 TargetState = SeverityState.Normal,
                 TimeToLive = Interval
             };
+        }
+
+        protected virtual void HandleUpdate()
+        {
+            if (_isProcessing)
+            {
+                Log.Warn("Failed to update, still processing last update.");
+                return;
+            }
+
+            lock (_isProcesingLock)
+            {
+                _isProcessing = true;
+                HandleResult(Update());
+                _isProcessing = false;
+            }
+        }
+
+        private MonitorResult Update()
+        {
+            var result = CreateResult();
 
             try
             {
@@ -98,8 +120,8 @@ namespace StackWarden.Monitoring
         }
 
         protected abstract void Update(MonitorResult result);
-
-        private void HandleResult(MonitorResult result)
+        
+        protected void HandleResult(MonitorResult result)
         {
             try
             {
