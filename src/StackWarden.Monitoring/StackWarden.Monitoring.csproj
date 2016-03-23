@@ -83,6 +83,7 @@
     <Compile Include="Configuration\CompositeMonitorFactory.cs" />
     <Compile Include="Configuration\MonitorResultHandlerFactory.cs" />
     <Compile Include="Machine\PerformanceMonitor.cs" />
+    <Compile Include="Machine\PerformanceMonitorFactory.cs" />
     <Compile Include="MessageQueue\QueueMonitor.cs" />
     <Compile Include="MonitorService.cs" />
     <Compile Include="MessageQueue\QueueSizeMonitorFactory.cs" />
