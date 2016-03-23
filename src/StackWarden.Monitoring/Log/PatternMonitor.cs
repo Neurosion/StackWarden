@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace StackWarden.Monitoring.Log
     {
         private readonly string _logDirectoryPath;
         private readonly Dictionary<string, int> _lastProcessedLine = new Dictionary<string, int>();
-        private DateTime _lastUpdatedOn = DateTime.Now;
+        private DateTime _lastUpdatedOn = DateTime.MinValue;
 
         public Regex FileNamePattern { get; set; }
         public Regex LogLineTimestampPattern { get; set; }
@@ -28,7 +27,7 @@ namespace StackWarden.Monitoring.Log
             _logDirectoryPath = logDirectoryPath.ThrowIfNullOrWhiteSpace(nameof(logDirectoryPath));
             Tags.Add(Constants.Categories.Log);
         }
-
+        
         protected override void Update(MonitorResult result)
         {
             var filesChanged = 0;
@@ -37,10 +36,7 @@ namespace StackWarden.Monitoring.Log
 
             try
             {
-                foreach (var currentFile in Directory.GetFiles(_logDirectoryPath)
-                                                     .Where(x => FileNamePattern?.IsMatch(x) ?? false)
-                                                     .Select(x => new FileInfo(x))
-                                                     .Where(x => x.LastWriteTime >= _lastUpdatedOn))
+                foreach (var currentFile in GetFilesSinceLastUpdate())
                 {
                     try
                     {
@@ -51,9 +47,6 @@ namespace StackWarden.Monitoring.Log
                         if (!_lastProcessedLine.ContainsKey(fullFileName))
                             _lastProcessedLine.Add(fullFileName, 1);
 
-                        var totalTime = new Stopwatch();
-                        totalTime.Start();
-
                         var lineCount = 0;
                         var lineCountLock = new object();
 
@@ -63,50 +56,17 @@ namespace StackWarden.Monitoring.Log
                                 lock (lineCountLock)
                                     lineCount++;
 
-                                if (index < _lastProcessedLine[fullFileName])
+                                if (!IsNewlyAddedLine(currentLine, index, fullFileName))
                                     return;
-
-                                if (LogLineTimestampPattern != null)
-                                {
-                                    var match = LogLineTimestampPattern.Match(currentLine);
-
-                                    if (match.Success)
-                                    {
-                                        DateTime parsedDate;
-
-                                        if (DateTime.TryParse(match.Value, out parsedDate))
-                                        {
-                                            if (parsedDate < _lastUpdatedOn)
-                                                return;
-                                        }
-                                    }
-                                }
 
                                 foreach (var currentPair in PatternSeverities.Where(x => x.Key.IsMatch(currentLine)))
                                 {
                                     result.Details.Add($"Line {index}", currentLine);
-
-                                    switch (result.TargetState)
-                                    {
-                                        case SeverityState.Warning:
-                                            if (currentPair.Value == SeverityState.Error)
-                                                result.TargetState = currentPair.Value;
-                                            break;
-                                        case SeverityState.Normal:
-                                            if (currentPair.Value == SeverityState.Error ||
-                                                currentPair.Value == SeverityState.Warning)
-                                                result.TargetState = currentPair.Value;
-                                            break;
-                                        default:
-                                            continue;
-                                    }
+                                    UpdateState(result, currentPair.Value);
                                 }
                             });
 
                         _lastProcessedLine[currentFile.FullName] = lineCount;
-
-                        totalTime.Stop();
-                        Debug.WriteLine($"{lineCount} in {totalTime.ElapsedMilliseconds}");
                     }
                     catch (Exception ex)
                     {
@@ -130,6 +90,53 @@ namespace StackWarden.Monitoring.Log
             }
 
             result.Details.Add("Files Changed", filesChanged.ToString());
+        }
+
+        private IEnumerable<FileInfo> GetFilesSinceLastUpdate()
+        {
+            return Directory.GetFiles(_logDirectoryPath)
+                            .Where(x => FileNamePattern?.IsMatch(x) ?? false)
+                            .Select(x => new FileInfo(x))
+                            .Where(x => x.LastWriteTime >= _lastUpdatedOn);
+        }
+
+        private static void UpdateState(MonitorResult result, SeverityState lineSeverityState)
+        {
+            switch (result.TargetState)
+            {
+                case SeverityState.Warning:
+                    if (lineSeverityState == SeverityState.Error)
+                        result.TargetState = lineSeverityState;
+                    break;
+                case SeverityState.Normal:
+                    if (lineSeverityState == SeverityState.Error ||
+                        lineSeverityState == SeverityState.Warning)
+                        result.TargetState = lineSeverityState;
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private bool IsNewlyAddedLine(string line, long index, string fileName)
+        {
+            if (index < _lastProcessedLine[fileName])
+                return false;
+
+            if (LogLineTimestampPattern == null)
+                return true;
+
+            var match = LogLineTimestampPattern.Match(line);
+
+            if (!match.Success)
+                return false;
+
+            DateTime parsedDate;
+
+            if (!DateTime.TryParse(match.Value, out parsedDate))
+                return false;
+
+            return parsedDate > _lastUpdatedOn;
         }
     }
 }
