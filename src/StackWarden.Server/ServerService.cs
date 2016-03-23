@@ -31,7 +31,7 @@ namespace StackWarden.Server
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Failed to start monitor {currentMonitor?.Name ?? null}.", ex);
+                    _log.Error($"Failed to start monitor {currentMonitor?.Name ?? "null"}.", ex);
                 }
             }
         }
@@ -46,7 +46,7 @@ namespace StackWarden.Server
                 }
                 catch (Exception ex)
                 {
-                    _log.Error($"Failed to stop monitor {currentMonitor?.Name ?? null}.", ex);
+                    _log.Error($"Failed to stop monitor {currentMonitor?.Name ?? "null"}.", ex);
                 }
             }
         }
