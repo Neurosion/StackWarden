@@ -21,6 +21,7 @@ namespace StackWarden.Monitoring.Configuration
             RegisterMonitorFactory<Database.SQLPresenceMonitorFactory>(configPath);
             RegisterMonitorFactory<Http.AvailabilityMonitorFactory>(configPath);
             RegisterMonitorFactory<Machine.AvailabilityMonitorFactory>(configPath);
+            RegisterMonitorFactory<Machine.PerformanceMonitorFactory>(configPath);
             RegisterMonitorFactory<MessageQueue.QueueSizeMonitorFactory>(configPath);
             RegisterMonitorFactory<Service.StateMonitorFactory>(configPath);
             RegisterMonitorFactory<Log.PatternMonitorFactory>(configPath);
@@ -45,6 +46,7 @@ namespace StackWarden.Monitoring.Configuration
             RegisterResultHandlerFactory<ResultHandling.EmailResultHandlerFactory>(configPath);
             RegisterResultHandlerFactory<ResultHandling.DashboardResultHandlerFactory>(configPath);
             RegisterResultHandlerFactory<ResultHandling.SlackResultHandlerFactory>(configPath);
+            RegisterResultHandlerFactory<ResultHandling.RecordingResultHandlerFactory>(configPath);
 
             ForConcreteType<CompositeResultHandlerFactory>().Configure
                                                             .Singleton()

@@ -24,12 +24,9 @@ namespace StackWarden.Monitoring.ResultHandling
 
         public override IEnumerable<string> SupportedValues => new [] { "Record" };
 
-        protected override RecordingResultHandler BuildFromConfig(Configuration config)
+        protected override IEnumerable<RecordingResultHandler> BuildFromConfig(Configuration config)
         {
-            var log = LogManager.GetLogger(typeof (RecordingResultHandler));
-            var handler = new RecordingResultHandler(log, _repository);
-
-            return handler;
+            yield return new RecordingResultHandler(LogManager.GetLogger(typeof(RecordingResultHandler)), _repository);
         }
     }
 }

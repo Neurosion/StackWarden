@@ -89,6 +89,8 @@
     <Compile Include="MessageQueue\QueueSizeMonitorFactory.cs" />
     <Compile Include="ResultHandling\EmailResultHandlerFactory.cs" />
     <Compile Include="ResultHandling\DashboardResultHandlerFactory.cs" />
+    <Compile Include="ResultHandling\RecordingResultHandler.cs" />
+    <Compile Include="ResultHandling\RecordingResultHandlerFactory.cs" />
     <Compile Include="ResultHandling\SlackResultHandlerFactory.cs" />
     <Compile Include="Service\ServiceStateMonitorFactory.cs" />
     <Compile Include="Database\PresenceMonitor.cs" />
