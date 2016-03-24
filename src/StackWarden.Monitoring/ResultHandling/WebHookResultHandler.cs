@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net;
+using System.Collections.Generic;
 using log4net;
 using StackWarden.Core.Extensions;
-using System.Collections.Generic;
 
 namespace StackWarden.Monitoring.ResultHandling
 {
@@ -23,7 +23,7 @@ namespace StackWarden.Monitoring.ResultHandling
 
         protected virtual bool ShouldHandle(MonitorResult result)
         {
-            return true;
+            return result != null;
         }
 
         public void Handle(MonitorResult result)
