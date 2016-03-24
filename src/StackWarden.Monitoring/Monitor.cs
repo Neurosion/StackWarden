@@ -6,16 +6,15 @@ using log4net;
 using StackWarden.Core;
 using StackWarden.Core.Extensions;
 using StackWarden.Monitoring.Configuration;
-using StackWarden.Monitoring.ResultHandling;
 
 namespace StackWarden.Monitoring
 {
     public abstract class Monitor : IMonitor
     {
         private readonly Timer _timer;
+        private readonly object _isProcesingLock = new object();
         private double _interval;
         private bool _isProcessing;
-        private object _isProcesingLock = new object();
 
         public event Action<MonitorResult> Updated;
 
@@ -46,8 +45,8 @@ namespace StackWarden.Monitoring
                     Start();
             }
         }
-        public string Name { get; set; }
 
+        public string Name { get; set; }
         protected ILog Log { get; }
 
         protected Monitor(ILog log, string name)
