@@ -1,8 +1,8 @@
-﻿using StackWarden.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using StackWarden.Core.Extensions;
 
 namespace StackWarden.Core.Configuration
 {
@@ -10,6 +10,8 @@ namespace StackWarden.Core.Configuration
     {
         private readonly IConfigurationReader _configurationReader;
         private readonly string _configPath;
+        private readonly Dictionary<string, TDefinition> _configurationInstances = new Dictionary<string, TDefinition>();
+        private readonly Dictionary<string, IEnumerable<TResult>> _builtInstances = new Dictionary<string, IEnumerable<TResult>>();
 
         protected abstract string ConfigExtension { get; }
         protected virtual TDefinition Definition => Activator.CreateInstance<TDefinition>();
@@ -23,13 +25,22 @@ namespace StackWarden.Core.Configuration
 
         public IEnumerable<TResult> Build(string name)
         {
-            var config = LoadConfiguration(name);
-            var instances = BuildFromConfig(config);
+            if (!_configurationInstances.ContainsKey(name))
+                _configurationInstances.Add(name, LoadConfiguration(name));
 
-            foreach (var currentInstance in instances)
-                ApplyPostBuildConfiguration(config, currentInstance);
+            var config = _configurationInstances[name];
 
-            return instances;
+            if (!_builtInstances.ContainsKey(name))
+            {
+                var instances = BuildFromConfig(config).ToList();
+
+                foreach (var currentInstance in instances)
+                    ApplyPostBuildConfiguration(config, currentInstance);
+
+                _builtInstances.Add(name, instances);
+            }
+
+            return _builtInstances[name];
         }
 
         public IEnumerable<TResult> Build()
