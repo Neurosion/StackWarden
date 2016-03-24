@@ -193,6 +193,18 @@
 }
 
 <div class="page-inner">
+    <div id="monitorGroups" data-bind="foreach: groups">
+        <div data-bind="text: groupKey"></div>
+        <!-- group header -->
+            <!-- group overall state -->
+            <!-- group overall name -->
+        <!-- group results -->
+            <!-- http, service, etc. -->
+            <!-- group result has header, can be clicked to show details for only that -->
+
+        <!-- existing result container can be for group, results become tabs that change context of message, details, tools -->
+    </div>
+
     <div id="monitorResults" data-bind="foreach: results">
         <div class="resultContainer" data-bind="attr: {'data-group-key': groupKey }">
             <div class="statusContainer"
