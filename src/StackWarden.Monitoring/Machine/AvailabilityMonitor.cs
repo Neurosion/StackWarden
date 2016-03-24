@@ -17,7 +17,6 @@ namespace StackWarden.Monitoring.Machine
             :base(log, $"Availability monitor for {targetAddress}.")
         {
             TargetAddress = targetAddress.ThrowIfNullOrWhiteSpace(nameof(targetAddress));
-            Tags.Add(Constants.Categories.Machine);
         }
 
         protected override void Update(MonitorResult result)

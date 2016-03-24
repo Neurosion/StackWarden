@@ -19,7 +19,6 @@ namespace StackWarden.Monitoring.Http
         {
             _address = address.ThrowIfNullOrWhiteSpace(nameof(address));
             InitializeDefaultStatusCodes();
-            Tags.Add(Core.Configuration.Constants.Categories.Web);
         }
 
         private void InitializeDefaultStatusCodes()

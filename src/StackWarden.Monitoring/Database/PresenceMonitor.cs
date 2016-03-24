@@ -12,15 +12,14 @@ namespace StackWarden.Monitoring.Database
     {
         private readonly T _connection;
 
-        protected string DatabaseName => _connection.Database;
-        protected abstract string DataSourceName { get; }
+        public string DatabaseName => _connection.Database;
+        public abstract string DataSourceName { get; }
 
         protected PresenceMonitor(ILog log, T connection)
             :base(log, nameof(PresenceMonitor<T>).ToExpandedString())
         {
             _connection = connection.ThrowIfNull(nameof(connection));
             Name += $"Database presence monitor for {DatabaseName} on {DataSourceName}.";
-            Tags.Add(Constants.Categories.Database);
         }
 
         protected abstract bool DoesDatabaseExist(T connection);

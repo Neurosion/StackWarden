@@ -41,7 +41,6 @@ namespace StackWarden.Monitoring.Machine
             :base(log, $"Performance monitor for {machineName}.")
         {
             _machineName = machineName.ThrowIfNullOrWhiteSpace(nameof(machineName));
-            Tags.Add(Constants.Categories.Machine);
         }
 
         protected override void Update(MonitorResult result)

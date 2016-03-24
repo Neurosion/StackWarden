@@ -17,7 +17,6 @@ namespace StackWarden.Monitoring.MessageQueue
             :base(log, name)
         {
             _queuePath = queuePath.ThrowIfNullOrWhiteSpace(nameof(queuePath));
-            Tags.Add(Constants.Categories.MessageQueue);
         }
 
         protected override void Update(MonitorResult result)
