@@ -73,6 +73,7 @@
     <Compile Include="Configuration\IFactory.cs" />
     <Compile Include="Configuration\JsonConfigurationReader.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Extensions\PipelineExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
