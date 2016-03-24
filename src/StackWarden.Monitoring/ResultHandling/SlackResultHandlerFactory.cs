@@ -24,7 +24,7 @@ namespace StackWarden.Monitoring.ResultHandling
             :base(configPath, configurationReader)
         { }
 
-        protected override SlackResultHandler BuildFromConfig(Configuration config)
+        protected override IEnumerable<SlackResultHandler> BuildFromConfig(Configuration config)
         {
             var instance = new SlackResultHandler(LogManager.GetLogger(typeof(SlackResultHandler)), config.HookAddress);
 
@@ -40,7 +40,7 @@ namespace StackWarden.Monitoring.ResultHandling
             if (config.NotificationThreshold.HasValue)
                 instance.NotificationThreshold = config.NotificationThreshold.Value;
 
-            return instance;
+            yield return instance;
         }
     }
 }

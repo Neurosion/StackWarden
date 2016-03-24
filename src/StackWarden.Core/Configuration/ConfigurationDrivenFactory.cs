@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackWarden.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,35 +15,33 @@ namespace StackWarden.Core.Configuration
         protected virtual TDefinition Definition => Activator.CreateInstance<TDefinition>();
         public abstract IEnumerable<string> SupportedValues { get; }
 
-        private readonly Dictionary<string, TResult> _builtInstances = new Dictionary<string, TResult>();
-
         protected ConfigurationDrivenFactory(string configPath, IConfigurationReader configurationReader)
         {
             _configPath = configPath;
-            _configurationReader = configurationReader;
+            _configurationReader = configurationReader.ThrowIfNull(nameof(configurationReader));
         }
 
-        public TResult Build(string name, bool useExistingInstance = false)
+        public IEnumerable<TResult> Build(string name)
         {
-            if (!useExistingInstance)
-                return BuildFromConfigName(name);
+            var config = LoadConfiguration(name);
+            var instances = BuildFromConfig(config);
 
-            if (!_builtInstances.ContainsKey(name))
-                _builtInstances.Add(name, BuildFromConfigName(name));
+            foreach (var currentInstance in instances)
+                ApplyPostBuildConfiguration(config, currentInstance);
 
-            return _builtInstances[name];
+            return instances;
         }
 
-        public IEnumerable<TResult> BuildAll()
+        public IEnumerable<TResult> Build()
         {
             var foundConfigurations = Directory.GetFiles(_configPath, $"*.{ConfigExtension}")
                                                .Select(Path.GetFileNameWithoutExtension);
-            var builtResults = foundConfigurations.Select(x => Build(x));
+            var builtResults = foundConfigurations.SelectMany(x => Build(x));
 
             return builtResults;
         }
 
-        protected abstract TResult BuildFromConfig(TDefinition config);
+        protected abstract IEnumerable<TResult> BuildFromConfig(TDefinition config);
 
         protected virtual TDefinition LoadConfiguration(string name)
         {
@@ -51,15 +50,6 @@ namespace StackWarden.Core.Configuration
             var config = _configurationReader.Read(fullPath, Definition);
 
             return config;
-        }
-
-        private TResult BuildFromConfigName(string name)
-        {
-            var config = LoadConfiguration(name);
-            var instance = BuildFromConfig(config);
-            ApplyPostBuildConfiguration(config, instance);
-
-            return instance;
         }
 
         protected virtual void ApplyPostBuildConfiguration(TDefinition config, TResult instance) { }

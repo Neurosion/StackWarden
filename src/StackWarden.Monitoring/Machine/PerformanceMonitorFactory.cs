@@ -24,7 +24,7 @@ namespace StackWarden.Monitoring.Machine
             : base(configPath, configurationReader, resultHandlerFactory)
         { }
 
-        protected override IMonitor BuildFromConfig(Configuration config)
+        protected override IEnumerable<IMonitor> BuildFromConfig(Configuration config)
         {
             var log = LogManager.GetLogger(typeof(PerformanceMonitor));
             var instance = new PerformanceMonitor(log, config.MachineName);
@@ -34,7 +34,7 @@ namespace StackWarden.Monitoring.Machine
             MapConfiguration(config.MemoryAvailableSeverity, instance.MemoryAvailableSeverity);
             MapConfiguration(config.MSMQStorageUsageSeverity, instance.MSMQStorageUsageSeverity);
 
-            return instance;
+            yield return instance;
         }
 
         private void MapConfiguration(Dictionary<string, int> source, Dictionary<SeverityState, int> destination)

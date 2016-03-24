@@ -27,7 +27,7 @@ namespace StackWarden.Monitoring.Configuration
             if (config.Tags?.Any() ?? false)
                 instance.Tags.AddRange(config.Tags);
 
-            foreach (var currentHandler in config.Handlers.Select(x => _resultHandlerFactory.Build(x, true)))
+            foreach (var currentHandler in config.Handlers.SelectMany(x => _resultHandlerFactory.Build(x)))
                 instance.Updated += currentHandler.Handle;
 
             if (!string.IsNullOrWhiteSpace(config.DisplayName))
@@ -37,14 +37,14 @@ namespace StackWarden.Monitoring.Configuration
         // Explicit IFactory<IMonitor> implementation
         IEnumerable<string> IFactory<IMonitor>.SupportedValues => SupportedValues;
 
-        IMonitor IFactory<IMonitor>.Build(string name, bool useExistingInstance)
+        IEnumerable<IMonitor> IFactory<IMonitor>.Build(string name)
         {
-            return Build(name, useExistingInstance);
+            return Build(name).Cast<IMonitor>();
         }
 
-        IEnumerable<IMonitor> IFactory<IMonitor>.BuildAll()
+        IEnumerable<IMonitor> IFactory<IMonitor>.Build()
         {
-            return BuildAll().Cast<IMonitor>();
+            return Build().Cast<IMonitor>();
         }
     }
 }

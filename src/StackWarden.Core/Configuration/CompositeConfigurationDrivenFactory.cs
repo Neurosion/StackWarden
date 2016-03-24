@@ -27,7 +27,7 @@ namespace StackWarden.Core.Configuration
             return config;
         }
 
-        protected override TResult BuildFromConfig(TDefinition config)
+        protected override IEnumerable<TResult> BuildFromConfig(TDefinition config)
         {
             var subFactory = SubFactories.FirstOrDefault(x => x.SupportedValues.Contains(config.Type));
 

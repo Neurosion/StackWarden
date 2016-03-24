@@ -3,7 +3,6 @@ using log4net;
 using StackWarden.Core.Configuration;
 using StackWarden.Monitoring.Configuration;
 
-
 namespace StackWarden.Monitoring.ResultHandling
 {
     public class DashboardResultHandlerFactory : ResultHandlerConfigurationDrivenFactory<DashboardResultHandlerFactory.Configuration, DashboardResultHandler>
@@ -20,11 +19,9 @@ namespace StackWarden.Monitoring.ResultHandling
             :base(configPath, configurationReader)
         { }
 
-        protected override DashboardResultHandler BuildFromConfig(Configuration config)
+        protected override IEnumerable<DashboardResultHandler> BuildFromConfig(Configuration config)
         {
-            var instance = new DashboardResultHandler(LogManager.GetLogger(typeof(DashboardResultHandler)), config.HookAddress);
-
-            return instance;
+            yield return new DashboardResultHandler(LogManager.GetLogger(typeof(DashboardResultHandler)), config.HookAddress);
         }
     }
 }

@@ -18,11 +18,9 @@ namespace StackWarden.Monitoring.Database
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
         
-        protected override SQLPresenceMonitor BuildFromConfig(Configuration config)
+        protected override IEnumerable<SQLPresenceMonitor> BuildFromConfig(Configuration config)
         {
-            var instance = new SQLPresenceMonitor(LogManager.GetLogger(typeof(SQLPresenceMonitor)), config.ConnectionString);
-
-            return instance;
+            yield return new SQLPresenceMonitor(LogManager.GetLogger(typeof(SQLPresenceMonitor)), config.ConnectionString);
         }
     }
 }

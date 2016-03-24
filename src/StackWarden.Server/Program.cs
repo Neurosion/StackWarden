@@ -23,7 +23,7 @@ namespace StackWarden.Server
                 });
             });
             var monitorFactory = container.GetInstance<CompositeMonitorFactory>();
-            var monitors = monitorFactory.BuildAll().ToArray();
+            var monitors = monitorFactory.Build().ToArray();
 #if DEBUG
 
             Console.WriteLine($"Configured {monitors.Count()} monitors.");

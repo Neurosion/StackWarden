@@ -22,7 +22,7 @@ namespace StackWarden.Monitoring
 
         public IEnumerable<IMonitor> GetAllMonitors()
         {
-            var monitors = _monitorFactory.BuildAll();
+            var monitors = _monitorFactory.Build();
 
             return monitors;
         }

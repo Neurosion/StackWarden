@@ -26,11 +26,9 @@ namespace StackWarden.Monitoring.ResultHandling
             _smtpClient = smtpClient.ThrowIfNull(nameof(smtpClient));
         }
 
-        protected override EmailResultHandler BuildFromConfig(Configuration config)
+        protected override IEnumerable<EmailResultHandler> BuildFromConfig(Configuration config)
         {
-            var instance = new EmailResultHandler(LogManager.GetLogger(typeof(EmailResultHandler)), _smtpClient, config.Sender, config.Recipients);
-
-            return instance;
+            yield return new EmailResultHandler(LogManager.GetLogger(typeof(EmailResultHandler)), _smtpClient, config.Sender, config.Recipients);
         }
     }
 }

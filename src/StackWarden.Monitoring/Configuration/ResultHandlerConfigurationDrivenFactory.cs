@@ -16,14 +16,14 @@ namespace StackWarden.Monitoring.Configuration
             :base(configPath, configurationReader)
         { }
 
-        IMonitorResultHandler IFactory<IMonitorResultHandler>.Build(string name, bool useExistingInstance)
+        IEnumerable<IMonitorResultHandler> IFactory<IMonitorResultHandler>.Build(string name)
         {
-            return Build(name, useExistingInstance);
+            return Build(name).Cast<IMonitorResultHandler>();
         }
 
-        IEnumerable<IMonitorResultHandler> IFactory<IMonitorResultHandler>.BuildAll()
+        IEnumerable<IMonitorResultHandler> IFactory<IMonitorResultHandler>.Build()
         {
-            return BuildAll().Cast<IMonitorResultHandler>();
+            return Build().Cast<IMonitorResultHandler>();
         }
     }
 }

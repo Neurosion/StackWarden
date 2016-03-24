@@ -24,7 +24,7 @@ namespace StackWarden.Monitoring.Log
 
         public override IEnumerable<string> SupportedValues => new[] { "Log.Pattern" };
 
-        protected override IMonitor BuildFromConfig(Configuration config)
+        protected override IEnumerable<IMonitor> BuildFromConfig(Configuration config)
         {
             var log = LogManager.GetLogger(typeof (PatternMonitor));
             var instance = new PatternMonitor(log, config.DirectoryPath);
@@ -43,7 +43,7 @@ namespace StackWarden.Monitoring.Log
                 instance.PatternSeverities.Add(new Regex(currentPair.Key, RegexOptions.Compiled), parsedSeverity);
             }
 
-            return instance;
+            yield return instance;
         }
     }
 }

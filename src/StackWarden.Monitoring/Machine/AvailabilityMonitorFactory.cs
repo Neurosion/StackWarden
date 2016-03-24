@@ -20,7 +20,7 @@ namespace StackWarden.Monitoring.Machine
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
 
-        protected override IMonitor BuildFromConfig(Configuration config)
+        protected override IEnumerable<IMonitor> BuildFromConfig(Configuration config)
         {
             var log = LogManager.GetLogger(typeof (AvailabilityMonitor));
             var instance = new AvailabilityMonitor(log, config.Address);
@@ -31,7 +31,7 @@ namespace StackWarden.Monitoring.Machine
             if (config.WarningThreshold.HasValue)
                 instance.WarningThreshold = config.WarningThreshold.Value;
 
-            return instance;
+            yield return instance;
         }
     }
 }
