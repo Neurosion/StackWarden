@@ -11,7 +11,7 @@ namespace StackWarden.Monitoring.Machine
     {
         public class Configuration : MonitorConfiguration
         {
-            public string MachineName { get; set; }
+            public IEnumerable<string> MachineNames { get; set; }
             public Dictionary<string, int> CpuUsageSeverity { get; set; }
             public Dictionary<string, int> MemoryAvailableSeverity { get; set; }
             public Dictionary<string, int> DiskSpaceAvailableSeverity { get; set; }
@@ -20,21 +20,25 @@ namespace StackWarden.Monitoring.Machine
 
         public override IEnumerable<string> SupportedValues => new[] { "Machine.Performance" };
 
-        protected PerformanceMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public PerformanceMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
             : base(configPath, configurationReader, resultHandlerFactory)
         { }
 
         protected override IEnumerable<IMonitor> BuildFromConfig(Configuration config)
         {
-            var log = LogManager.GetLogger(typeof(PerformanceMonitor));
-            var instance = new PerformanceMonitor(log, config.MachineName);
+            config.ThrowIfNull(nameof(config.MachineNames));
 
-            MapConfiguration(config.CpuUsageSeverity, instance.CpuUsageSeverity);
-            MapConfiguration(config.DiskSpaceAvailableSeverity, instance.DiskSpaceAvailableSeverity);
-            MapConfiguration(config.MemoryAvailableSeverity, instance.MemoryAvailableSeverity);
-            MapConfiguration(config.MSMQStorageUsageSeverity, instance.MSMQStorageUsageSeverity);
+            foreach (var currentName in config.MachineNames)
+            {
+                var instance = new PerformanceMonitor(LogManager.GetLogger(typeof(PerformanceMonitor)), currentName);
 
-            yield return instance;
+                MapConfiguration(config.CpuUsageSeverity, instance.CpuUsageSeverity);
+                MapConfiguration(config.DiskSpaceAvailableSeverity, instance.DiskSpaceAvailableSeverity);
+                MapConfiguration(config.MemoryAvailableSeverity, instance.MemoryAvailableSeverity);
+                MapConfiguration(config.MSMQStorageUsageSeverity, instance.MSMQStorageUsageSeverity);
+
+                yield return instance;
+            }
         }
 
         private void MapConfiguration(Dictionary<string, int> source, Dictionary<SeverityState, int> destination)

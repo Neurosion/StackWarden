@@ -51,11 +51,8 @@ namespace StackWarden.Monitoring.Machine
             CheckMSMQStorage(result);
         }
 
-        private SeverityState GetThresholdState<T>(SeverityState resultState, Dictionary<SeverityState, T> criteriaSource, Func<T, bool> compare)
+        private SeverityState GetThresholdState<T>(Dictionary<SeverityState, T> criteriaSource, Func<T, bool> compare)
         {
-            if (resultState == SeverityState.Error)
-                return resultState;
-
             foreach (var currentState in Enum.GetValues(typeof(SeverityState)).Cast<SeverityState>())
                 if (criteriaSource.ContainsKey(currentState) && compare(criteriaSource[currentState]))
                     return currentState;
@@ -91,16 +88,31 @@ namespace StackWarden.Monitoring.Machine
                 if (transformValue != null && counterValue.HasValue)
                     counterValue = transformValue(counterValue.Value);
             }
-            catch (Exception) { /* Using N/A for failure output. */ }
+            catch (Exception ex)
+            {
+                result.FriendlyMessage = ex.ToDetailString();
+                result.TargetState = SeverityState.Error;
+            }
 
-            result.Details.Add(name, string.Format(valueFormatString, counterValue?.ToString() ?? "N/A"));
+            var formattedValue = counterValue.HasValue
+                                    ? string.Format(valueFormatString, counterValue)
+                                    : string.Format(valueFormatString, "N/A");
+            result.Details.Add(name, formattedValue);
 
             if (!counterValue.HasValue)
                 return;
 
-            result.TargetState = GetThresholdState(result.TargetState,
-                                                   thresholdCriteria,
-                                                   threshold => compareThreshold(threshold, counterValue.Value));
+            if (result.TargetState == SeverityState.Error)
+                return;
+
+            var counterState = GetThresholdState(thresholdCriteria, threshold => compareThreshold(threshold, counterValue.Value));
+
+            if ((result.TargetState == SeverityState.Warning && counterState == SeverityState.Error) ||
+                (result.TargetState == SeverityState.Normal && counterState == SeverityState.Warning))
+            {
+                result.TargetState = counterState;
+                result.FriendlyMessage = $"{name} is {formattedValue}";
+            }
         }
 
         private void CheckCpu(MonitorResult result)
@@ -114,9 +126,9 @@ namespace StackWarden.Monitoring.Machine
                           InstanceName = "_Total"
                       },
                       "CPU Usage",
-                      "{0}%",
+                      "{0:0}%",
                       CpuUsageSeverity,
-                      (threshold, cpuUsage) => threshold >= cpuUsage);
+                      (threshold, cpuUsage) => cpuUsage >= threshold);
         }
 
         private void CheckMemory(MonitorResult result)
@@ -131,7 +143,7 @@ namespace StackWarden.Monitoring.Machine
                       "Memory Available",
                       "{0}MB",
                       MemoryAvailableSeverity,
-                      (threshold, memoryAvailable) => threshold <= memoryAvailable);
+                      (threshold, memoryAvailable) => memoryAvailable <= threshold);
         }
 
         private void CheckDiskSpace(MonitorResult result)
@@ -141,12 +153,13 @@ namespace StackWarden.Monitoring.Machine
                       {
                           MachineName = _machineName,
                           CategoryName = "LogicalDisk",
-                          CounterName = "% Free Space"
+                          CounterName = "% Free Space",
+                          InstanceName = "_Total"
                       },
                       "Disk Space Available",
-                      "{0}%",
+                      "{0:0}%",
                       DiskSpaceAvailableSeverity,
-                      (threshold, diskAvailable) => threshold <= diskAvailable);
+                      (threshold, diskAvailable) => diskAvailable <= threshold);
         }
         
         private void CheckMSMQStorage(MonitorResult result)
@@ -159,7 +172,7 @@ namespace StackWarden.Monitoring.Machine
                           CounterName = "Total bytes in all queues"
                       },
                       "MSMQ Storage Usage",
-                      "{0}MB",
+                      "{0:#}MB",
                       value => value / Constants.Units.Kibi / Constants.Units.Kibi,
                       MSMQStorageUsageSeverity,
                       (threshold, storageUsage) => threshold >= storageUsage);

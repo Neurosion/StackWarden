@@ -21,6 +21,7 @@ namespace StackWarden.Monitoring.Configuration
             RegisterMonitorFactory<Database.SQLPresenceMonitorFactory>(configPath);
             RegisterMonitorFactory<Http.AvailabilityMonitorFactory>(configPath);
             RegisterMonitorFactory<Machine.AvailabilityMonitorFactory>(configPath);
+            RegisterMonitorFactory<Machine.PerformanceMonitorFactory>(configPath);
             RegisterMonitorFactory<MessageQueue.QueueSizeMonitorFactory>(configPath);
             RegisterMonitorFactory<Service.StateMonitorFactory>(configPath);
             RegisterMonitorFactory<Log.PatternMonitorFactory>(configPath);
