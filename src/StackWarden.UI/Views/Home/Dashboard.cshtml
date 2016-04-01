@@ -112,13 +112,40 @@
 
                 self.groupKey = ko.observable(key);
                 self.results = ko.observableArray();
+                self.state = ko.computed(function() {
+                    return self.results().length > 0
+                            ? self.results()[0].state()
+                            : '@normal';
+                });
+                self.selectedResult = ko.observable();
+                self.select = function (clickedResult) {
+                    self.selectedResult(self.selectedResult() !== clickedResult
+                                            ? clickedResult
+                                            : null);
+                };
+                self.shouldShowControlPanel = ko.computed(function() {
+                    return self.selectedResult() !== null;
+                });
+                self.shouldShowMessage = ko.computed(function() {
+                    return self.state() !== '@normal';
+                });
+                self.message = ko.computed(function() {
+                    var combinedMessage = "";
+
+                    self.results().forEach(function(currentResult) {
+                        if (currentResult.state() !== '@normal' && currentResult.message())
+                            combinedMessage += currentResult.message() + "\n";
+                    });
+
+                    return combinedMessage;
+                });
             }
 
             function MonitorResultListModel() {
                 var self = this;
                 
                 self.results = ko.observableArray();
-                self.groups = ko.observableArray([]);
+                self.groups = ko.observableArray();
 
                 self.results.subscribe(function (newValues) {
                     newValues.forEach(function (newValue) {
@@ -139,16 +166,16 @@
 
                         targetGroup.results().forEach(function (currentResult) {
                             if (currentResult.name() == newValue.name()) {
-                                currentResult = newValue;
                                 wasFound = true;
                             }
                         });
 
-                        if (wasFound === false)
+                        if (wasFound === false) {
                             targetGroup.results.push(newValue);
+                            sortResults(targetGroup.results);
+                        }
                     });
                 });
-                
 
                 sortResults(self.results);
             };
@@ -193,22 +220,29 @@
 }
 
 <div class="page-inner">
-    <div id="monitorGroups" data-bind="foreach: groups">
-        <div data-bind="text: groupKey"></div>
-        <!-- group header -->
-            <!-- group overall state -->
-            <!-- group overall name -->
-        <!-- group results -->
-            <!-- http, service, etc. -->
-            <!-- group result has header, can be clicked to show details for only that -->
-
-        <!-- existing result container can be for group, results become tabs that change context of message, details, tools -->
-    </div>
-
-    <div id="monitorResults" data-bind="foreach: results">
-        <div class="resultContainer" data-bind="attr: {'data-group-key': groupKey }">
-            <div class="statusContainer"
-                 data-bind="title: details,
+    <div class="monitorGroupContainer" data-bind="foreach: groups">
+        <div class="monitorGroup"
+             data-bind="css: {
+                            normal: state() === '@normal',
+                            warning: state() === '@warning',
+                            error: state() === '@error'
+                        }">
+            <div class="groupName" data-bind="text: groupKey"></div>
+            <i class="smallIcon statusIcon fa" data-bind="css: {
+                                            'fa-exclamation-triangle': state() == '@warning',
+                                            'fa-exclamation-circle': state() == '@error'
+                                         }"></i>
+            <div class="groupResults" data-bind="foreach: results,
+                                                 css: {
+                                                    expandedGroupMonitorResults: selectedResult() != null    
+                                                 }">
+                <div class="resultContainer" data-bind="click: $parent.select, 
+                                                        css: { selectedGroupMonitorResult: $parent.selectedResult() && $data == $parent.selectedResult() }">
+                    <i class="smallIcon statusIcon fa" data-bind="css: {
+                                                                    'fa-chain-broken': isStale
+                                                                  }"></i>
+                    <div class="statusContainer"
+                         data-bind="title: details,
                             click: toggleControlPanel,
                             css: {
                                 normal: state() === '@normal',
@@ -216,21 +250,21 @@
                                 error: state() === '@error',
                                 stale: isStale
                             }">
-                <span data-bind="text: name"></span>
-                <i class="smallIcon typeIcon fa" data-bind="css: 'fa-' + icon()"></i>
-                <i class="smallIcon statusIcon fa" data-bind="css: {
-                                            'fa-exclamation-triangle': state() == '@warning',
-                                            'fa-exclamation-circle': state() == '@error',
-                                            'fa-chain-broken': isStale
-                                         }"></i>
+                        <span class="resultName" data-bind="text: name"></span>
+                        <i class="smallIcon typeIcon fa" data-bind="css: 'fa-' + icon()"></i>
+                    </div>
+                </div>
             </div>
             <div class="statusMessage"
                  data-bind="text: message,
-                            css: { 
-                                collapsedVertical: !shouldShowMessage(),
-                                stale: isStale
+                            css: {
+                                collapsedVertical: !shouldShowMessage()
                             }"></div>
-            <div class="controlPanel" data-bind="css: { collapsedVertical: !shouldShowControlPanel() }">
+            <!-- existing result container can be for gro
+                up, results become tabs that change context of message, details, tools -->
+            <div class="controlPanel" data-bind="with: selectedResult, css: { collapsedVertical: !selectedResult() || !shouldShowControlPanel() }">
+                <div class="monitorName" data-bind="text: name"></div>
+                <div class="message" data-bind="text: message"></div>
                 <div class="subPanel toolsPanel" data-bind="css: { collapsedHorizontal: !shouldShowToolsPanel() }">
                     <div class="toggleContainer" data-bind="click: toggleDetailsPanel, visible: hasDetails">
                         <i class="smallIcon fa fa-list-ul"></i>

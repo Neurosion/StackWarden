@@ -18,10 +18,15 @@ namespace StackWarden.UI
                 { nameof(Stop), "stop" },
                 { nameof(Restart), "refresh" },
                 { nameof(Application), "desktop" },
-                { nameof(Server), "sitemap" },
+                { nameof(Server), "server" },
                 { nameof(Service), "terminal" },
                 { nameof(Queue), "envelope-o" },
-                { nameof(Loading), "spinner fa-spin" }
+                { nameof(Loading), "spinner fa-spin" },
+                { nameof(Database), "database" },
+                { nameof(Http), "globe" },
+                { nameof(Machine), "server" },
+                { nameof(Log), "file-text-o" },
+                { nameof(MessageQueue), "envelope-o" }
             };
 
             public static string Default => Map[nameof(Default)];
@@ -33,6 +38,11 @@ namespace StackWarden.UI
             public static string Service => Map[nameof(Service)];
             public static string Queue => Map[nameof(Queue)];
             public static string Loading => Map[nameof(Loading)];
+            public static string Database => Map[nameof(Database)];
+            public static string Http => Map[nameof(Http)];
+            public static string Machine => Map[nameof(Machine)];
+            public static string Log => Map[nameof(Log)];
+            public static string MessageQueue => Map[nameof(MessageQueue)];
         }
 
         public static class Monitor

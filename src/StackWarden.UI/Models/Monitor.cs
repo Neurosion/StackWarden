@@ -29,9 +29,7 @@ namespace StackWarden.UI.Models
                 State = result.TargetState.ToString(),
                 Message = result.FriendlyMessage,
                 StaleAfter = projectedResultLife,
-                Icon = result.Tags.Where(x => Constants.Icons.Map.ContainsKey(x))
-                                  .Select(x => Constants.Icons.Map[x])
-                                  .FirstOrDefault(),
+                Icon = GetIcon(result.SourceType),
                 Tags = result.Tags.ToList()
             };
 
@@ -39,6 +37,16 @@ namespace StackWarden.UI.Models
                 model.Details = new Dictionary<string, string>(result.Details);
             
             return model;
+        }
+
+        private static string GetIcon(Type monitorType)
+        {
+            var namespaceName = monitorType.Namespace.Split('.').LastOrDefault();
+            var foundIcon = Constants.Icons.Map.ContainsKey(namespaceName)
+                                ? Constants.Icons.Map[namespaceName]
+                                : null;
+
+            return foundIcon;
         }
     }
 }
