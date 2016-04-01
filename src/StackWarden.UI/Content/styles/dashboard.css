@@ -15,7 +15,7 @@
 }
 
 .smallIcon {
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .mediumIcon {
@@ -33,9 +33,9 @@
 }
 
 .typeIcon {
-    position:absolute;
-    left: 3px;
-    top: 3px;
+    position: absolute;
+    left: 1px;
+    top: 1px;
 }
 
 .statusMessage {
@@ -253,6 +253,7 @@
 
 .groupResults .statusContainer {
     border: none;
+    padding: 1px 0 0 0;
     height: 100%;
     width: 100%;
 }
@@ -264,10 +265,15 @@
 .expandedGroupMonitorResults .resultContainer,
 .groupResults:hover .resultContainer {
     opacity: .75;
-    width: 17px !important;
-    height: 17px;
+    width: 18px !important;
+    height: 18px;
     margin: 2px;
     border-right: solid 1px #000;
+}
+
+.expandedGroupMonitorResults .statusContainer .fa,
+.groupResults:hover .statusContainer .fa {
+    display: block;
 }
 
 .selectedGroupMonitorResult,

@@ -238,9 +238,6 @@
                                                  }">
                 <div class="resultContainer" data-bind="click: $parent.select, 
                                                         css: { selectedGroupMonitorResult: $parent.selectedResult() && $data == $parent.selectedResult() }">
-                    <i class="smallIcon statusIcon fa" data-bind="css: {
-                                                                    'fa-chain-broken': isStale
-                                                                  }"></i>
                     <div class="statusContainer"
                          data-bind="title: details,
                             click: toggleControlPanel,
@@ -250,8 +247,8 @@
                                 error: state() === '@error',
                                 stale: isStale
                             }">
-                        <span class="resultName" data-bind="text: name"></span>
-                        <i class="smallIcon typeIcon fa" data-bind="css: 'fa-' + icon()"></i>
+                        <i class="smallIcon fa fa-chain-broken" data-bind="visible: isStale"></i>
+                        <i class="smallIcon fa " data-bind="css: 'fa-' + icon(), visible: !isStale()"></i>
                     </div>
                 </div>
             </div>
