@@ -44,7 +44,6 @@ namespace StackWarden.Monitoring.Service
         {
             _machineName = machineName.ThrowIfNullOrWhiteSpace(nameof(machineName));
             _serviceName = serviceName.ThrowIfNullOrWhiteSpace(nameof(serviceName));
-            Tags.Add(Constants.Categories.Service);
         }
 
         protected override void Update(MonitorResult result)

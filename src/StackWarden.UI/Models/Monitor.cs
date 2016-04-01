@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using StackWarden.Monitoring;
 using System.Linq;
+using StackWarden.Monitoring;
 
 namespace StackWarden.UI.Models
 {
@@ -12,6 +12,7 @@ namespace StackWarden.UI.Models
         public string State { get; set; }
         public string Message { get; set; }
         public string Icon { get; set; }
+        public List<string> Tags { get; set; }
         public Dictionary<string, string> Details { get; set; }
         public DateTime StaleAfter { get; set; }
         public List<Tool> Tools { get; set; }
@@ -28,15 +29,24 @@ namespace StackWarden.UI.Models
                 State = result.TargetState.ToString(),
                 Message = result.FriendlyMessage,
                 StaleAfter = projectedResultLife,
-                Icon = result.Tags.Where(x => Constants.Icons.Map.ContainsKey(x))
-                                  .Select(x => Constants.Icons.Map[x])
-                                  .FirstOrDefault()
-        };
+                Icon = GetIcon(result.SourceType),
+                Tags = result.Tags.ToList()
+            };
 
             if (result.Details != null)
                 model.Details = new Dictionary<string, string>(result.Details);
             
             return model;
+        }
+
+        private static string GetIcon(Type monitorType)
+        {
+            var namespaceName = monitorType.Namespace.Split('.').LastOrDefault();
+            var foundIcon = Constants.Icons.Map.ContainsKey(namespaceName)
+                                ? Constants.Icons.Map[namespaceName]
+                                : null;
+
+            return foundIcon;
         }
     }
 }

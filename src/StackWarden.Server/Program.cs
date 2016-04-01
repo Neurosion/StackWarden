@@ -27,6 +27,8 @@ namespace StackWarden.Server
 #if DEBUG
 
             Console.WriteLine($"Configured {monitors.Count()} monitors.");
+            Console.WriteLine(string.Join(Environment.NewLine, monitors.Select(x => x.Name)));
+
             var consoleResultHandler = new ConsoleResultHandler();
 
             foreach (var currentMonitor in monitors)

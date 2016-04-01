@@ -25,7 +25,6 @@ namespace StackWarden.Monitoring.Log
             :base(log, $"Log pattern monitor for '{logDirectoryPath}'")
         {
             _logDirectoryPath = logDirectoryPath.ThrowIfNullOrWhiteSpace(nameof(logDirectoryPath));
-            Tags.Add(Constants.Categories.Log);
         }
         
         protected override void Update(MonitorResult result)

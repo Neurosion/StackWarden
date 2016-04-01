@@ -1,15 +1,4 @@
-﻿#monitorResults {
-    display: inline-flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-}
-
-#monitorResults * {
-    transition: all 1s ease;
-}
-
-.resultContainer {
+﻿.resultContainer {
     position: relative;
     width: 250px;
     margin: 2px;
@@ -59,6 +48,7 @@
     padding: 3px;
     width: 100%;
     height: 30px;
+    max-height: 100%;
     overflow: hidden;
 }
 
@@ -73,11 +63,11 @@
     border: solid 1px #888888;
     z-index: 10 !important;
 
-    -webkit-filter: unset;
-    -moz-filter: unset;
-    -ms-filter: unset;
-    filter: unset;
-    transition: all 1s ease;
+    -webkit-filter: grayscale(0);
+    -moz-filter: grayscale(0);
+    -ms-filter: gray(0);
+    filter: gray(0);
+    transition: all .3s ease;
 }
 
 .toggleContainer {
@@ -96,7 +86,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    transition: all .5s ease-in-out;
+    transition: all .25s ease-in-out;
     overflow: hidden;
     padding-top: 20px;
 }
@@ -141,12 +131,8 @@
     margin-right: auto;
 }
 
-.detailData {
-    line-height: 15px;
-}
-
 .detailName {
-    width: 40%;
+    width: 30%;
     text-align:right;
     text-decoration: underline;
 }
@@ -157,26 +143,25 @@
 
 .detailValue {
     padding-left: 5px;
-    width: 70%;
 }
 
 .collapsedVertical {
-    height: 0px;
-    padding: 0px;
-    margin: 0px;
+    height: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .collapsedHorizontal {
-    width: 0px;
-    padding: 0px;
-    margin: 0px;
+    width: 0;
+    padding: 0;
+    margin: 0;
 }
 
 .stale {
     -webkit-filter: grayscale(100%);
     -moz-filter: grayscale(100%);
-    -ms-filter: grayscale(100%);
-    filter: gray;
+    -ms-filter: gray(100%);
+    filter: gray(100%);
 }
 
 .normal {
@@ -184,18 +169,134 @@
 }
 
 .warning {
-    background: #ff6a00;
+    background: #ffa500;
     border-bottom: none;
 }
 
 .error {
-    background: #AA0000;
+    background: #ff2222;
     color: #FFFFFF;
     border-bottom: none;
+}
+
+/* Grouping */
+
+.monitorGroupContainer {
+    display: inline-flex;
+    transition: all .5s ease;
+    font-family: Verdana;
+    font-size: 8pt;
+    line-height: 15px;
+}
+
+.monitorGroup {
+    position: relative;
+    border: solid 1px black;
+    margin: 3px;
+    padding: 3px;
+    max-width: 218px !important;
+    background: #777;
+    color: #FFF;
+}
+
+.monitorGroup .controlPanel {
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    width: 400px;
+    border: none;
+    padding-left: 5px;
+    background: rgba(0, 0, 0, .75);
+}
+
+.monitorGroup .controlPanel .message {
+    font-weight: bold;
+}
+
+.monitorGroup.normal .groupName {
+    display: none;
+}
+
+.monitorGroup.normal:hover .groupName {
+    display: block;
+}
+
+.groupName {
+    font-weight: bold;
+    padding-right: 25px;
+    padding-bottom: 2px;
+}
+
+.groupResults {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+}
+
+.groupResults .resultContainer {
+    display: flex;
+    border: solid 1px #000;
+    overflow: hidden;
+    width: 5px;
+    height: 12px;
+    margin: 0;
+    border-right: none;
+    flex-flow: column wrap;
+    justify-content: flex-start;
+    transition: all .25s ease;
+}
+
+.groupResults .resultContainer:nth-last-of-type(1) {
+    border-right: solid 1px #000;
+    width: 6px;
+}
+
+.groupResults .statusContainer {
+    border: none;
+    height: 100%;
+    width: 100%;
+}
+
+.groupResults .statusContainer * {
+    display: none;
+}
+
+.expandedGroupMonitorResults .resultContainer,
+.groupResults:hover .resultContainer {
+    opacity: .75;
+    width: 17px !important;
+    height: 17px;
+    margin: 2px;
+    border-right: solid 1px #000;
+}
+
+.selectedGroupMonitorResult,
+.groupResults .resultContainer:hover {
+    opacity: 1 !important;
+    border-color: #fff !important;
+}
+
+.monitorGroup .statusMessage {
+    left: -1px;
+    width: calc(100% + 2px);
+    top: 100%;
+    height: auto;
+}
+
+/* Mobile */
+
+@media (min-width: 500px) {
+    .monitorGroup.normal {
+        width: auto;
+    }
 }
 
 @media (max-width: 499px){
     .resultContainer {
         width: 100%;
+    }
+
+    .monitorGroupContainer {
+        flex-flow: row wrap;
     }
 }

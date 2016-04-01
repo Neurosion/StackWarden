@@ -6,7 +6,7 @@ namespace StackWarden.Monitoring.Database
 {
     public class SQLPresenceMonitor : PresenceMonitor<SqlConnection>
     {
-        protected override string DataSourceName { get; }
+        public override string DataSourceName { get; }
         public SQLPresenceMonitor(ILog log, string connectionString)
             :base(log, new SqlConnection(connectionString.ThrowIfNullOrWhiteSpace(nameof(connectionString))))
         {

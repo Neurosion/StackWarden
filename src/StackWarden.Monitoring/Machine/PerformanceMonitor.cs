@@ -41,7 +41,6 @@ namespace StackWarden.Monitoring.Machine
             :base(log, $"Performance monitor for {machineName}.")
         {
             _machineName = machineName.ThrowIfNullOrWhiteSpace(nameof(machineName));
-            Tags.Add(Constants.Categories.Machine);
         }
 
         protected override void Update(MonitorResult result)
@@ -89,7 +88,11 @@ namespace StackWarden.Monitoring.Machine
                 if (transformValue != null && counterValue.HasValue)
                     counterValue = transformValue(counterValue.Value);
             }
-            catch (Exception) { /* Using N/A for failure output. */ }
+            catch (Exception ex)
+            {
+                result.FriendlyMessage = ex.ToDetailString();
+                result.TargetState = SeverityState.Error;
+            }
 
             var formattedValue = counterValue.HasValue
                                     ? string.Format(valueFormatString, counterValue)
