@@ -15,206 +15,17 @@
     <script src="~/Content/scripts/jquery.signalR-2.2.0.min.js"></script>
     <script src="signalr/hubs"></script>
     <script src="~/Content/scripts/knockout-3.4.0.js"></script>
+    <script src="~/Content/scripts/stackwarden.js"></script>
+    <script src="~/Content/scripts/monitorResults.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
-            function convertToKeyValuePairs(source) {
-                var pairs = [];
-
-                for (var key in source)
-                    if (source.hasOwnProperty(key))
-                        pairs.push({ key: key, value: source[key] });
-
-                return pairs;
-            }
-
-            function MonitorResultModel(source) {
-                var self = this;
-
-                self.name = ko.observable(source.Name);
-                self.details = ko.observableArray(convertToKeyValuePairs(source.Details));
-                self.hasDetails = ko.pureComputed(function () {
-                    return self.details() !== null && self.details().length > 0;
-                });
-                self.message = ko.observable(source.Message);
-                self.targetName = ko.observable(source.TargetName);
-                self.staleAfter = ko.observable(new Date(source.StaleAfter));
-                self.state = ko.observable(source.State);
-                self.icon = ko.observable(source.Icon);
-                self.tags = ko.observableArray(source.Tags);
-                self.groupKey = ko.computed(function () {
-                    return self.tags().sort().join('');
-                });
-                self.lastUIRefresh = ko.observable(new Date());
-                self.isStale = ko.pureComputed(function () {
-                    return self.staleAfter() < self.lastUIRefresh();
-                }, self);
-                self.shouldShowMessage = ko.pureComputed(function () {
-                    return self.state() != '@normal';
-                }, self);
-                self.shouldShowControlPanel = ko.observable(false);
-                self.toggleControlPanel = function () {
-                    self.shouldShowControlPanel(!self.shouldShowControlPanel());
-                };
-                self.shouldShowDetailsPanel = ko.observable(true);
-                self.toggleDetailsPanel = function () {
-                    self.shouldShowDetailsPanel(!self.shouldShowDetailsPanel());
-
-                    if (self.shouldShowDetailsPanel())
-                        self.shouldShowToolsPanel(false);
-                };
-                self.shouldShowToolsPanel = ko.observable(false);
-                self.toggleToolsPanel = function () {
-                    self.shouldShowToolsPanel(!self.shouldShowToolsPanel());
-
-                    if (self.shouldShowToolsPanel())
-                        self.shouldShowDetailsPanel(false);
-                };
-                self.tools = ko.observable(source.Tools);
-                self.hasTools = ko.pureComputed(function () {
-                    return self.tools() !== null && self.tools().length > 0;
-                });
-
-                self.staleAfter.subscribe(function (newValue) {
-                    setTimeout(function () {
-                        self.lastUIRefresh(new Date());
-                    }, newValue - new Date() + 50);
-                });
-            }
-
-            function sortResults(results) {
-                var stateWeight = {
-                    '@normal': 0,
-                    '@warning': 1,
-                    '@error': 2
-                };
-
-                results.sort(function (left, right) {
-                    var leftState = stateWeight[left.state()];
-                    var rightState = stateWeight[right.state()];
-                    var stateComparisonResult = leftState < rightState
-                                                    ? 1
-                                                    : rightState < leftState
-                                                        ? -1
-                                                        : 0;
-
-                    if (stateComparisonResult !== 0)
-                        return stateComparisonResult;
-
-                    var nameComparisonResult = left.name().localeCompare(right.name());
-
-                    return nameComparisonResult;
-                });
-            }
-
-            function MonitorResultGroupModel(key) {
-                var self = this;
-
-                self.groupKey = ko.observable(key);
-                self.results = ko.observableArray();
-                self.state = ko.computed(function() {
-                    return self.results().length > 0
-                            ? self.results()[0].state()
-                            : '@normal';
-                });
-                self.selectedResult = ko.observable();
-                self.select = function (clickedResult) {
-                    self.selectedResult(self.selectedResult() !== clickedResult
-                                            ? clickedResult
-                                            : null);
-                };
-                self.shouldShowControlPanel = ko.computed(function() {
-                    return self.selectedResult() !== null;
-                });
-                self.shouldShowMessage = ko.computed(function() {
-                    return self.state() !== '@normal';
-                });
-                self.message = ko.computed(function() {
-                    var combinedMessage = "";
-
-                    self.results().forEach(function(currentResult) {
-                        if (currentResult.state() !== '@normal' && currentResult.message())
-                            combinedMessage += currentResult.message() + "\n";
-                    });
-
-                    return combinedMessage;
-                });
-            }
-
-            function MonitorResultListModel() {
-                var self = this;
-                
-                self.results = ko.observableArray();
-                self.groups = ko.observableArray();
-
-                self.results.subscribe(function (newValues) {
-                    newValues.forEach(function (newValue) {
-                        var targetGroup = null;
-
-                        self.groups().forEach(function (currentGroup) {
-                            if (currentGroup.groupKey() == newValue.groupKey()) {
-                                targetGroup = currentGroup;
-                            }
-                        });
-
-                        if (targetGroup == null) {
-                            targetGroup = new MonitorResultGroupModel(newValue.groupKey());
-                            self.groups.push(targetGroup);
-                        }
-
-                        var wasFound = false;
-
-                        targetGroup.results().forEach(function (currentResult) {
-                            if (currentResult.name() == newValue.name()) {
-                                wasFound = true;
-                            }
-                        });
-
-                        if (wasFound === false) {
-                            targetGroup.results.push(newValue);
-                            sortResults(targetGroup.results);
-                        }
-                    });
-                });
-
-                sortResults(self.results);
-            };
-
-            var allResults = JSON.parse('@(Newtonsoft.Json.JsonConvert.SerializeObject(Model))');
-            var monitorResults = new MonitorResultListModel();
-
-            allResults.forEach(function (currentResult) {
-                monitorResults.results.push(new MonitorResultModel(currentResult));
+            stackwarden.monitorResults.initialize({
+                normal: '@normal',
+                warning: '@warning',
+                error: '@error',
+                initialData: JSON.parse('@(Newtonsoft.Json.JsonConvert.SerializeObject(Model))')
             });
-
-            var $notificationHub = $.connection.notificationHub;
-            $notificationHub.client.addMonitorResult = function (newResult) {
-                var modelResult = new MonitorResultModel(newResult);
-                var didFind = false;
-
-                monitorResults.results().forEach(function (item, index) {
-                    if (item.name() === modelResult.name()) {
-                        didFind = true;
-
-                        item.name(modelResult.name());
-                        item.details(modelResult.details());
-                        item.targetName(modelResult.targetName());
-                        item.staleAfter(modelResult.staleAfter());
-                        item.state(modelResult.state());
-                        item.message(modelResult.message());
-                        item.icon(modelResult.icon());
-                    }
-                });
-
-                if (!didFind)
-                    monitorResults.results.push(modelResult);
-
-                sortResults(monitorResults.results);
-            };
-
-            ko.applyBindings(monitorResults);
-
-            $.connection.hub.start();
         });
     </script>
 }
@@ -257,8 +68,6 @@
                             css: {
                                 collapsedVertical: !shouldShowMessage()
                             }"></div>
-            <!-- existing result container can be for gro
-                up, results become tabs that change context of message, details, tools -->
             <div class="controlPanel" data-bind="with: selectedResult, css: { collapsedVertical: !selectedResult() || !shouldShowControlPanel() }">
                 <div class="monitorName" data-bind="text: name"></div>
                 <div class="message" data-bind="text: message"></div>

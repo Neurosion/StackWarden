@@ -205,6 +205,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\scripts\monitorResults.js" />
+    <Content Include="Content\scripts\stackwarden.js" />
     <Content Include="Content\styles\binarytheme-basic.css" />
     <Content Include="Content\styles\binarytheme-custom.css" />
     <Content Include="Content\styles\bootstrap.css" />
