@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using log4net;
 using StackWarden.Core.Configuration;
 using StackWarden.Core.Extensions;
@@ -9,24 +10,32 @@ namespace StackWarden.Monitoring.ResultHandling
 {
     public class RecordingResultHandlerFactory : ResultHandlerConfigurationDrivenFactory<RecordingResultHandlerFactory.Configuration, RecordingResultHandler>
     {
-        private readonly IRepository _repository;
+        private readonly RepositoryFactory _repositoryFactory;
 
         public class Configuration : IConfiguration
         {
             public string Type { get; set; }
+            public string[] Repositories { get; set; }
         }
 
-        public RecordingResultHandlerFactory(string configPath, IConfigurationReader configurationReader, IRepository repository)
+        public RecordingResultHandlerFactory(string configPath, IConfigurationReader configurationReader, RepositoryFactory repositoryFactory)
             : base(configPath, configurationReader)
         {
-            _repository = repository.ThrowIfNull(nameof(repository));
+            _repositoryFactory = repositoryFactory.ThrowIfNull(nameof(repositoryFactory));
         }
 
         public override IEnumerable<string> SupportedValues => new [] { "Record" };
 
         protected override IEnumerable<RecordingResultHandler> BuildFromConfig(Configuration config)
         {
-            yield return new RecordingResultHandler(LogManager.GetLogger(typeof(RecordingResultHandler)), _repository);
+            config.Repositories.ThrowIfNullOrEmpty(nameof(config.Repositories));
+
+            var repositories = config.Repositories.SelectMany(x => _repositoryFactory.Build(x));
+
+            repositories.ThrowIfNullOrEmpty(nameof(repositories), $"No repository instances could be resolved from repositories: {string.Join(",", config.Repositories)}");
+
+            foreach (var currentRepository in repositories)
+                yield return new RecordingResultHandler(LogManager.GetLogger(typeof(RecordingResultHandler)), currentRepository);
         }
     }
 }
