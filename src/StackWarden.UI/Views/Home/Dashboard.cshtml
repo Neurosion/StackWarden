@@ -26,7 +26,7 @@
                 normal: '@normal',
                 warning: '@warning',
                 error: '@error',
-                initialData: JSON.parse('@(Newtonsoft.Json.JsonConvert.SerializeObject(Model))')
+                initialData: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model))
             });
         });
     </script>

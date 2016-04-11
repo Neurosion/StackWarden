@@ -29,10 +29,21 @@ namespace StackWarden.Core.Persistence
                                });
         }
 
+        public void Delete<T>(T entity)
+        {
+            var entityType = typeof (T);
+
+            if (!_items.ContainsKey(entityType))
+                return;
+
+            _items[entityType].Remove(entity);
+        }
+
         public IQueryable<T> Query<T>()
         {
             return _items.GetOrAdd(typeof(T), type => new List<object>())
                          .OfType<T>()
+                         .ToList()
                          .AsQueryable();
         }
     }
