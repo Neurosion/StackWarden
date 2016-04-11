@@ -11,12 +11,12 @@ namespace StackWarden.Core.Tests.Extensions
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("  ")]
-        public void ThrowIfNullOrWhiteSpace_WhenTargetIsNullOrWhiteSpace_WithOnlyMessageProvided_ThrowsExceptionWithProvidedMessage(string target)
+        public void ThrowIfNullOrWhiteSpace_WhenTargetIsNullOrWhiteSpace_WithOnlyArgumentNameProvided_ThrowsExceptionWithProvidedArgumentName(string target)
         {
-            const string message = "Test message";
-            var exception = Assert.Throws<ArgumentException>(() => target.ThrowIfNullOrWhiteSpace(message));
+            const string argumentName = "message";
+            var exception = Assert.Throws<ArgumentException>(() => target.ThrowIfNullOrWhiteSpace(argumentName));
 
-            exception.Message.ShouldEqual(message);
+            exception.ParamName.ShouldEqual(argumentName);
         }
 
         [TestCase(null)]
@@ -27,9 +27,9 @@ namespace StackWarden.Core.Tests.Extensions
         {
             const string message = "Test message";
             const string argumentName = "test argument name";
-            var exception = Assert.Throws<ArgumentException>(() => target.ThrowIfNullOrWhiteSpace(message, argumentName));
+            var exception = Assert.Throws<ArgumentException>(() => target.ThrowIfNullOrWhiteSpace(argumentName, message));
 
-            exception.Message.ShouldEqual(message);
+            exception.Message.ShouldStartWith(message);
             exception.ParamName.ShouldEqual(argumentName);
         }
 
