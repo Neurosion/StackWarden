@@ -205,7 +205,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\OrangeExclamationTriangle.png" />
+    <Content Include="Content\images\RedExclamationCircle.png" />
     <Content Include="Content\scripts\monitorResults.js" />
+    <Content Include="Content\scripts\notifications.js" />
     <Content Include="Content\scripts\stackwarden.js" />
     <Content Include="Content\styles\binarytheme-basic.css" />
     <Content Include="Content\styles\binarytheme-custom.css" />
@@ -255,7 +258,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />

@@ -12,7 +12,8 @@
         $notificationHub.client.addMonitorResult = function (newResult) {
             var modelResult = new stackwarden.monitorResults.models.monitorResult(newResult, loadedOptions);
             var didFind = false;
-
+            var previousState = undefined;
+            
             monitorResults.results().forEach(function (item, index) {
                 if (item.name() === modelResult.name()) {
                     didFind = true;
@@ -21,6 +22,9 @@
                     item.details(modelResult.details());
                     item.targetName(modelResult.targetName());
                     item.staleAfter(modelResult.staleAfter());
+
+                    previousState = item.state();
+
                     item.state(modelResult.state());
                     item.message(modelResult.message());
                     item.icon(modelResult.icon());
@@ -29,6 +33,27 @@
 
             if (!didFind)
                 monitorResults.results.push(modelResult);
+
+            // todo: move this to model, model's state.subscribe not currently doing anything
+            if (previousState !== modelResult.state() && modelResult.state() !== loadedOptions.normal) {
+                var icon = undefined;
+
+                switch (modelResult.state()) {
+                    case loadedOptions.warning:
+                        icon = "./Content/images/OrangeExclamationTriangle.png";
+                        break;
+                    case loadedOptions.error:
+                        icon = "./Content/images/RedExclamationCircle.png";
+                        break;
+                }
+                
+                stackwarden.notifications.notify(
+                    modelResult.state(),
+                    "Monitor: " + modelResult.name() + "\n\n" +
+                    modelResult.message(),
+                    icon
+                );
+            }
 
             stackwarden.monitorResults.sortResults(monitorResults.results, loadedOptions);
         };
@@ -39,9 +64,9 @@
     },
     defaultOptions: function () {
         return {
-            normal: 'normal',
-            warning: 'warning',
-            error: 'error',
+            normal: "normal",
+            warning: "warning",
+            error: "error",
             initialData: []      
         };
     },
@@ -106,10 +131,10 @@
             var self = this;
             var loadedOptions = $.extend(stackwarden.monitorResults.defaultOptions(),
                                          options);
-
+            
             self.groupKey = ko.observable(key);
             self.results = ko.observableArray();
-            self.state = ko.computed(function () {
+            self.state = ko.pureComputed(function() {
                 return self.results().length > 0
                         ? self.results()[0].state()
                         : loadedOptions.normal;
@@ -120,13 +145,13 @@
                                         ? clickedResult
                                         : null);
             };
-            self.shouldShowControlPanel = ko.computed(function () {
+            self.shouldShowControlPanel = ko.pureComputed(function () {
                 return self.selectedResult() !== null;
             });
             self.shouldShowMessage = ko.pureComputed(function () {
-                return self.state() != loadedOptions.normal;
+                return self.state() !== loadedOptions.normal;
             });
-            self.message = ko.computed(function () {
+            self.message = ko.pureComputed(function () {
                 var combinedMessage = "";
 
                 self.results().forEach(function (currentResult) {

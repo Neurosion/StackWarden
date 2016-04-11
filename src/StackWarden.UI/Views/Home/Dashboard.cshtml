@@ -17,9 +17,11 @@
     <script src="~/Content/scripts/knockout-3.4.0.js"></script>
     <script src="~/Content/scripts/stackwarden.js"></script>
     <script src="~/Content/scripts/monitorResults.js"></script>
+    <script src="~/Content/scripts/notifications.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function () {
+            stackwarden.notifications.enable();
             stackwarden.monitorResults.initialize({
                 normal: '@normal',
                 warning: '@warning',
