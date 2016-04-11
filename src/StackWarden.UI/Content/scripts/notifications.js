@@ -30,7 +30,8 @@
                Notification.permission === "granted";
     },
     enable: function() {
-        if (Notification.permission !== "default")
+        if (!stackwarden.notifications.isSupported() ||
+            Notification.permission !== "default")
             return;
 
         Notification.requestPermission();
