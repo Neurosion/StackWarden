@@ -18,9 +18,9 @@ namespace StackWarden.Monitoring.Machine
             public Dictionary<string, int> MSMQStorageUsageSeverity { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Machine.Performance" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Machine.Performance" };
 
-        public PerformanceMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public PerformanceMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             : base(configPath, configurationReader, resultHandlerFactory)
         { }
 

@@ -3,7 +3,6 @@ using System.Net.NetworkInformation;
 using log4net;
 using StackWarden.Core;
 using StackWarden.Core.Extensions;
-using StackWarden.Core.Configuration;
 
 namespace StackWarden.Monitoring.Machine
 {
@@ -19,35 +18,35 @@ namespace StackWarden.Monitoring.Machine
             TargetAddress = targetAddress.ThrowIfNullOrWhiteSpace(nameof(targetAddress));
         }
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
-            result.TargetName = TargetAddress;
+            result.Target.Name = TargetAddress;
 
             try
             {
                 var reply = new Ping().Send(TargetAddress);
-                result.Details.Add("IP Status", reply.Status.ToExpandedString());
+                result.Metadata.Add("IP Status", reply.Status.ToExpandedString());
 
                 if (reply.Status == IPStatus.Success)
                 {
-                    result.FriendlyMessage = $"Ping: {reply.RoundtripTime}ms";
-                    result.Details.Add(nameof(reply.RoundtripTime).ToExpandedString(), $"{reply.RoundtripTime}ms");
+                    result.Message = $"Ping: {reply.RoundtripTime}ms";
+                    result.Metadata.Add(nameof(reply.RoundtripTime).ToExpandedString(), $"{reply.RoundtripTime}ms");
 
                     if (reply.RoundtripTime >= ErrorThreshold)
-                        result.TargetState = SeverityState.Error;
+                        result.Target.State = SeverityState.Error;
                     else if (reply.RoundtripTime >= WarningThreshold)
-                        result.TargetState = SeverityState.Warning;
+                        result.Target.State = SeverityState.Warning;
                 }
                 else
                 {
-                    result.TargetState = SeverityState.Error;
-                    result.FriendlyMessage = "Ping failed.";
+                    result.Target.State = SeverityState.Error;
+                    result.Message = "Ping failed.";
                 }
             }
             catch (Exception ex)
             {
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
+                result.Message = ex.ToDetailString();
             }
         }
     }

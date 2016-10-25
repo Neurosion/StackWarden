@@ -23,13 +23,13 @@ namespace StackWarden.UI.Controllers.Api
 
         [HttpPost]
         [Route("result/hook")]
-        public void ResultHook(MonitorResult result)
+        public void ResultHook(Result result)
         {
           //  _monitorService.Save(result);
             NotifyResultAdded(result);
         }
 
-        private void NotifyResultAdded(MonitorResult result)
+        private void NotifyResultAdded(Result result)
         {
             var resultModel = (Models.Monitor)result;
 

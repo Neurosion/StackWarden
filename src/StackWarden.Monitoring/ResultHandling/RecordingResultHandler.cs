@@ -5,10 +5,12 @@ using StackWarden.Core.Persistence;
 
 namespace StackWarden.Monitoring.ResultHandling
 {
-    public class RecordingResultHandler : IMonitorResultHandler
+    public class RecordingResultHandler : IResultHandler
     {
         private readonly ILog _log;
         private readonly IRepository _repository;
+
+        public string Name { get; set; }
 
         public RecordingResultHandler(ILog log, IRepository repository)
         {
@@ -16,16 +18,20 @@ namespace StackWarden.Monitoring.ResultHandling
             _repository = repository.ThrowIfNull(nameof(repository));
         }
 
-        public void Handle(MonitorResult result)
+        public bool Handle(Result result)
         {
             try
             {
                 _repository.Save(result);
+
+                return true;
             }
             catch (Exception ex)
             {
                 _log.Error("Failed to record result.", ex);
             }
+
+            return false;
         }
     }
 }

@@ -55,6 +55,10 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management.Automation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Management.Automation.6.1.7601.17515\lib\net45\System.Management.Automation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -87,10 +91,16 @@
     <Compile Include="MessageQueue\QueueMonitor.cs" />
     <Compile Include="MonitorService.cs" />
     <Compile Include="MessageQueue\QueueSizeMonitorFactory.cs" />
+    <Compile Include="ResultHandling\CompositeResultHandler.cs" />
+    <Compile Include="ResultHandling\CompositeResultHandlerFactory.cs" />
+    <Compile Include="ResultHandling\ScriptedResultHandler.cs" />
+    <Compile Include="ResultHandling\ScriptedResultHandlerFactory.cs" />
     <Compile Include="ResultHandling\EmailResultHandlerFactory.cs" />
     <Compile Include="ResultHandling\DashboardResultHandlerFactory.cs" />
+    <Compile Include="ResultHandling\ICompositeResultHandlerFactory.cs" />
     <Compile Include="ResultHandling\RecordingResultHandler.cs" />
     <Compile Include="ResultHandling\RecordingResultHandlerFactory.cs" />
+    <Compile Include="ResultHandling\ResultHandler.cs" />
     <Compile Include="ResultHandling\SlackResultHandlerFactory.cs" />
     <Compile Include="Service\ServiceStateMonitorFactory.cs" />
     <Compile Include="Database\PresenceMonitor.cs" />
@@ -102,9 +112,9 @@
     <Compile Include="IMonitor.cs" />
     <Compile Include="ResultHandling\ConsoleResultHandler.cs" />
     <Compile Include="ResultHandling\EmailResultHandler.cs" />
-    <Compile Include="ResultHandling\IMonitorResultHandler.cs" />
+    <Compile Include="ResultHandling\IResultHandler.cs" />
     <Compile Include="Monitor.cs" />
-    <Compile Include="MonitorResult.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="ResultHandling\DashboardResultHandler.cs" />
     <Compile Include="ResultHandling\SlackResultHandler.cs" />
     <Compile Include="ResultHandling\WebHookResultHandler.cs" />

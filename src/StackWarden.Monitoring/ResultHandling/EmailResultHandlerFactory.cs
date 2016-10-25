@@ -18,7 +18,7 @@ namespace StackWarden.Monitoring.ResultHandling
 
         private readonly SmtpClient _smtpClient;
 
-        public override IEnumerable<string> SupportedValues => new[] { "Email" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Email" };
         
         public EmailResultHandlerFactory(string configPath, IConfigurationReader configurationReader, SmtpClient smtpClient)
             :base(configPath, configurationReader)

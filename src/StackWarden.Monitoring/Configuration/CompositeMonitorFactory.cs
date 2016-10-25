@@ -14,7 +14,7 @@ namespace StackWarden.Monitoring.Configuration
         
         protected override string ConfigExtension => "monitorconfig";
 
-        public override IEnumerable<string> SupportedValues => SubFactories.SelectMany(x => x.SupportedValues);
+        public override IEnumerable<string> SupportedTypeValues => SubFactories.SelectMany(x => x.SupportedTypeValues);
 
         public CompositeMonitorFactory(string configPath, IConfigurationReader configurationReader, IEnumerable<IMonitorFactory> factories)
             :base(configPath, configurationReader, factories)

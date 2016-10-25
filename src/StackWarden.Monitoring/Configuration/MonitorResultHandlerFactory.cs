@@ -4,7 +4,7 @@ using StackWarden.Monitoring.ResultHandling;
 namespace StackWarden.Monitoring.Configuration
 {
     public abstract class MonitorResultHandlerFactory<TDefinition, TMonitorResultHandler> : ConfigurationDrivenFactory<TDefinition, TMonitorResultHandler>
-        where TMonitorResultHandler: IMonitorResultHandler
+        where TMonitorResultHandler: IResultHandler
     {
         protected override string ConfigExtension => "handlerconfig";
 

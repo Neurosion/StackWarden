@@ -21,9 +21,9 @@ namespace StackWarden.Monitoring.MessageQueue
             public int? ErrorThreshold { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "MSMQ.QueueSize" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "MSMQ.QueueSize" };
 
-        public QueueSizeMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public QueueSizeMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
         

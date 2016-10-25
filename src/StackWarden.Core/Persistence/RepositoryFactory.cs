@@ -11,7 +11,7 @@ namespace StackWarden.Core.Persistence
             public string Type { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new [] { "SQL", "Memory" };
+        public override IEnumerable<string> SupportedTypeValues => new [] { "SQL", "Memory" };
 
         protected override string ConfigExtension => "repositoryconfig";
 

@@ -43,7 +43,7 @@ namespace StackWarden.Monitoring.Machine
             _machineName = machineName.ThrowIfNullOrWhiteSpace(nameof(machineName));
         }
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
             CheckCpu(result);
             CheckMemory(result);
@@ -60,7 +60,7 @@ namespace StackWarden.Monitoring.Machine
             return SeverityState.Normal;
         }
 
-        private void AddDetail<T>(MonitorResult result,
+        private void AddDetail<T>(Result result,
                                   Func<PerformanceCounter> buildCounter,
                                   string name,
                                   string valueFormatString,
@@ -70,7 +70,7 @@ namespace StackWarden.Monitoring.Machine
             AddDetail(result, buildCounter, name, valueFormatString, x => x, thresholdCriteria, compareThreshold);
         }
 
-        private void AddDetail<T>(MonitorResult result,
+        private void AddDetail<T>(Result result,
                                   Func<PerformanceCounter> buildCounter,
                                   string name,
                                   string valueFormatString,
@@ -90,32 +90,32 @@ namespace StackWarden.Monitoring.Machine
             }
             catch (Exception ex)
             {
-                result.FriendlyMessage = ex.ToDetailString();
-                result.TargetState = SeverityState.Error;
+                result.Message = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
             }
 
             var formattedValue = counterValue.HasValue
                                     ? string.Format(valueFormatString, counterValue)
                                     : string.Format(valueFormatString, "N/A");
-            result.Details.Add(name, formattedValue);
+            result.Metadata.Add(name, formattedValue);
 
             if (!counterValue.HasValue)
                 return;
 
-            if (result.TargetState == SeverityState.Error)
+            if (result.Target.State == SeverityState.Error)
                 return;
 
             var counterState = GetThresholdState(thresholdCriteria, threshold => compareThreshold(threshold, counterValue.Value));
 
-            if ((result.TargetState == SeverityState.Warning && counterState == SeverityState.Error) ||
-                (result.TargetState == SeverityState.Normal && counterState == SeverityState.Warning))
+            if ((result.Target.State == SeverityState.Warning && counterState == SeverityState.Error) ||
+                (result.Target.State == SeverityState.Normal && counterState == SeverityState.Warning))
             {
-                result.TargetState = counterState;
-                result.FriendlyMessage = $"{name} is {formattedValue}";
+                result.Target.State = counterState;
+                result.Message = $"{name} is {formattedValue}";
             }
         }
 
-        private void CheckCpu(MonitorResult result)
+        private void CheckCpu(Result result)
         {
             AddDetail(result,
                       () => new PerformanceCounter
@@ -131,7 +131,7 @@ namespace StackWarden.Monitoring.Machine
                       (threshold, cpuUsage) => cpuUsage >= threshold);
         }
 
-        private void CheckMemory(MonitorResult result)
+        private void CheckMemory(Result result)
         {
             AddDetail(result,
                       () => new PerformanceCounter
@@ -146,7 +146,7 @@ namespace StackWarden.Monitoring.Machine
                       (threshold, memoryAvailable) => memoryAvailable <= threshold);
         }
 
-        private void CheckDiskSpace(MonitorResult result)
+        private void CheckDiskSpace(Result result)
         {
             AddDetail(result,
                       () => new PerformanceCounter
@@ -162,7 +162,7 @@ namespace StackWarden.Monitoring.Machine
                       (threshold, diskAvailable) => diskAvailable <= threshold);
         }
         
-        private void CheckMSMQStorage(MonitorResult result)
+        private void CheckMSMQStorage(Result result)
         {
             AddDetail(result,
                       () => new PerformanceCounter

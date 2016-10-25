@@ -37,23 +37,23 @@ namespace StackWarden.Monitoring.ResultHandling
             Headers.Add("Content-Type", "application/json");
         }
 
-        protected override bool ShouldHandle(MonitorResult result)
+        protected override bool ShouldHandle(Result result)
         {
             switch (NotificationThreshold)
             {
                 case SeverityState.Normal:
                     return true;
                 case SeverityState.Warning:
-                    return result.TargetState == SeverityState.Warning ||
-                           result.TargetState == SeverityState.Error;
+                    return result.Target.State == SeverityState.Warning ||
+                           result.Target.State == SeverityState.Error;
                 case SeverityState.Error:
-                    return result.TargetState == SeverityState.Error;
+                    return result.Target.State == SeverityState.Error;
                 default:
                     return false;
             }
         }
 
-        protected override string FormatResult(MonitorResult result)
+        protected override string FormatResult(Result result)
         {
             var slackData = new Dictionary<string, string>();
 
@@ -68,7 +68,7 @@ namespace StackWarden.Monitoring.ResultHandling
 
             slackData.Add(MessageConstants.Text, string.Join(Environment.NewLine, new[]
             {
-                $"Monitor: {result.SourceName}", $"Target: {result.TargetName}", $"State: {result.TargetState}", result.FriendlyMessage
+                $"Monitor: {result.Source.Name}", $"Target: {result.Target.Name}", $"State: {result.Target.State}", result.Message
             }));
 
             var serializedMessage = JsonConvert.SerializeObject(slackData);

@@ -18,9 +18,9 @@ namespace StackWarden.Monitoring.Service
             public IEnumerable<string> ServiceNamePatterns { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Service.State" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Service.State" };
 
-        public StateMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory) 
+        public StateMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory) 
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
         

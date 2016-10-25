@@ -32,8 +32,8 @@ namespace StackWarden.UI.Controllers
         [Route("Dashboard")]
         public ActionResult Dashboard()
         {
-            var results = _repository.Query<MonitorResult>()
-                                     .GroupBy(x => x.SourceName)
+            var results = _repository.Query<Result>()
+                                     .GroupBy(x => x.Source != null ? x.Source.Name : null)
                                      .Select(x => x.OrderByDescending(r => r.SentOn).First())
                                      .Select(x => (Monitor)x)
                                      .ToList();
@@ -44,9 +44,9 @@ namespace StackWarden.UI.Controllers
         [Route("home/tagged")]
         public ActionResult Category(string[] tags)
         {
-            var monitorResults = _repository.Query<MonitorResult>()
+            var monitorResults = _repository.Query<Result>()
                                             .Where(x => !tags.Except(x.Tags).Any())
-                                            .GroupBy(x => x.SourceName)
+                                            .GroupBy(x => x.Source != null ? x.Source.Name : null)
                                             .Select(x => x.OrderByDescending(r => r.SentOn).First())
                                             .ToList();
             var results = monitorResults.Select(m =>

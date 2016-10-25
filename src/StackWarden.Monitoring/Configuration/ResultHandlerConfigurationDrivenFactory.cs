@@ -5,25 +5,25 @@ using StackWarden.Monitoring.ResultHandling;
 
 namespace StackWarden.Monitoring.Configuration
 {
-    public abstract class ResultHandlerConfigurationDrivenFactory<TDefinition, TResultHandler> : ConfigurationDrivenFactory<TDefinition, TResultHandler>, IMonitorResultHandlerFactory
-        where TResultHandler : IMonitorResultHandler
+    public abstract class ResultHandlerConfigurationDrivenFactory<TDefinition, TResultHandler> : ConfigurationDrivenFactory<TDefinition, TResultHandler>, IResultHandlerFactory
+        where TResultHandler : IResultHandler
     {
         protected override string ConfigExtension => "handlerconfig";
 
-        IEnumerable<string> IFactory<IMonitorResultHandler>.SupportedValues => SupportedValues;
+        IEnumerable<string> IFactory<IResultHandler>.SupportedTypeValues => SupportedTypeValues;
 
         protected ResultHandlerConfigurationDrivenFactory(string configPath, IConfigurationReader configurationReader) 
             :base(configPath, configurationReader)
         { }
 
-        IEnumerable<IMonitorResultHandler> IFactory<IMonitorResultHandler>.Build(string name)
+        IEnumerable<IResultHandler> IFactory<IResultHandler>.Build(string name)
         {
-            return Build(name).Cast<IMonitorResultHandler>();
+            return Build(name).Cast<IResultHandler>();
         }
 
-        IEnumerable<IMonitorResultHandler> IFactory<IMonitorResultHandler>.Build()
+        IEnumerable<IResultHandler> IFactory<IResultHandler>.Build()
         {
-            return Build().Cast<IMonitorResultHandler>();
+            return Build().Cast<IResultHandler>();
         }
     }
 }

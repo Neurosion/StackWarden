@@ -15,7 +15,7 @@ namespace StackWarden.Core.Configuration
 
         protected abstract string ConfigExtension { get; }
         protected virtual TDefinition Definition => Activator.CreateInstance<TDefinition>();
-        public abstract IEnumerable<string> SupportedValues { get; }
+        public abstract IEnumerable<string> SupportedTypeValues { get; }
 
         protected ConfigurationDrivenFactory(string configPath, IConfigurationReader configurationReader)
         {

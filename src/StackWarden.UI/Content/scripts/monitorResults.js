@@ -19,7 +19,7 @@
 
                     item.name(modelResult.name());
                     item.details(modelResult.details());
-                    item.targetName(modelResult.targetName());
+                    item.targetName(modelresult.Target.Name());
                     item.staleAfter(modelResult.staleAfter());
                     item.state(modelResult.state());
                     item.message(modelResult.message());

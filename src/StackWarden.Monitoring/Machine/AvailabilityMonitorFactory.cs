@@ -14,9 +14,9 @@ namespace StackWarden.Monitoring.Machine
             public int? ErrorThreshold { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Machine.Availability" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Machine.Availability" };
 
-        public AvailabilityMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public AvailabilityMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
 

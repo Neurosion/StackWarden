@@ -3,7 +3,7 @@ using StackWarden.Monitoring.ResultHandling;
 
 namespace StackWarden.Monitoring.Configuration
 {
-    public interface IMonitorResultHandlerFactory : IFactory<IMonitorResultHandler>
+    public interface IResultHandlerFactory : IFactory<IResultHandler>
     {
     }
 }

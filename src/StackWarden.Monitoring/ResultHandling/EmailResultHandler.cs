@@ -6,16 +6,29 @@ using System.Collections.Generic;
 
 namespace StackWarden.Monitoring.ResultHandling
 {
-    public class EmailResultHandler : IMonitorResultHandler
+    public class EmailResultHandler : IResultHandler
     {
         private readonly ILog _log;
         private readonly SmtpClient _smtpClient;
         private readonly string _sender;
         private readonly string _recipients;
 
-        public Func<MonitorResult, string> SubjectFormatter { get; set; } = DefaultSubjectFormatter;
-        public Func<MonitorResult, string> BodyFormatter { get; set; } = DefaultBodyFormatter;
+        private Func<Result, string> _subjectFormatter;
+        private Func<Result, string> _bodyFormatter;
 
+        public string Name { get; set; }
+
+        public Func<Result, string> SubjectFormatter
+        {
+            get { return _subjectFormatter ?? DefaultSubjectFormatter; }
+            set { _subjectFormatter = value; }
+        }
+        public Func<Result, string> BodyFormatter
+        {
+            get { return _bodyFormatter ?? DefaultBodyFormatter; }
+            set { _bodyFormatter = value; }
+        }
+        
         public EmailResultHandler(ILog log, SmtpClient smtpClient, string sender, params string[] recipients)
         {
             _log = log.ThrowIfNull(nameof(log));
@@ -24,42 +37,46 @@ namespace StackWarden.Monitoring.ResultHandling
             _recipients = string.Join(";", recipients.ThrowIfNullOrEmpty(nameof(recipients)));
         }
 
-        private static string DefaultSubjectFormatter(MonitorResult result)
+        private static string DefaultSubjectFormatter(Result result)
         {
-            return $"{result.SourceType}: {result.TargetName}";
+            return $"{result.Source.Type}: {result.Target.Name}";
         }
 
-        private static string DefaultBodyFormatter(MonitorResult result)
+        private static string DefaultBodyFormatter(Result result)
         {
             var components = new List<string>
             {
-                $"Monitor: {result.SourceType}",
-                $"Target: {result.TargetName}",
-                $"State: {result.TargetState}"
+                $"Monitor: {result.Source.Type}",
+                $"Target: {result.Target.Name}",
+                $"State: {result.Target.State}"
             };
 
-            if (!string.IsNullOrWhiteSpace(result.FriendlyMessage))
-                components.Add($"Details: {result.FriendlyMessage}");
+            if (!string.IsNullOrWhiteSpace(result.Message))
+                components.Add($"Details: {result.Message}");
 
             var body = string.Join(Environment.NewLine, components);
 
             return body;
         }
 
-        public void Handle(MonitorResult result)
+        public bool Handle(Result result)
         {
             try
             {
-                var subject = SubjectFormatter.ThrowIfNull(nameof(SubjectFormatter)).Invoke(result);
-                var body = BodyFormatter.ThrowIfNull(nameof(BodyFormatter)).Invoke(result);
+                var subject = SubjectFormatter.Invoke(result);
+                var body = BodyFormatter.Invoke(result);
                 var message = new MailMessage(_sender, _recipients, subject, body);
 
                 _smtpClient.Send(message);
+
+                return true;
             }
             catch (Exception ex)
             {
                 _log.Error("Failed to send email.", ex);
             }
+
+            return false;
         }
     }
 }

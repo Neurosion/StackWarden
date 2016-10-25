@@ -12,7 +12,7 @@ namespace StackWarden.Monitoring.ResultHandling
 
         public object JsonConvert { get; private set; }
 
-        protected override string FormatResult(MonitorResult result)
+        protected override string FormatResult(Result result)
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(result);
         }

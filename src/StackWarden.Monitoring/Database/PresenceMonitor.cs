@@ -24,11 +24,11 @@ namespace StackWarden.Monitoring.Database
 
         protected abstract bool DoesDatabaseExist(T connection);
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
-            result.TargetName = $"{DatabaseName} on {DataSourceName}";
-            result.Details.Add("Database", DatabaseName);
-            result.Details.Add("Data Source", DataSourceName);
+            result.Target.Name = $"{DatabaseName} on {DataSourceName}";
+            result.Metadata.Add("Database", DatabaseName);
+            result.Metadata.Add("DataSource", DataSourceName);
 
             try
             {
@@ -36,14 +36,14 @@ namespace StackWarden.Monitoring.Database
 
                 if (!DoesDatabaseExist(_connection))
                 {
-                    result.TargetState = SeverityState.Error;
-                    result.FriendlyMessage = "Database was not found.";
+                    result.Target.State = SeverityState.Error;
+                    result.Message = "Database was not found.";
                 }
             }
             catch (Exception ex)
             {
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
+                result.Message = ex.ToDetailString();
             }
             finally
             {

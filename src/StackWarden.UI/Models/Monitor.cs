@@ -13,28 +13,28 @@ namespace StackWarden.UI.Models
         public string Message { get; set; }
         public string Icon { get; set; }
         public List<string> Tags { get; set; }
-        public Dictionary<string, string> Details { get; set; }
+        public Dictionary<string, object> Details { get; set; }
         public DateTime StaleAfter { get; set; }
         public List<Tool> Tools { get; set; }
 
-        public static implicit operator Monitor(MonitorResult result)
+        public static implicit operator Monitor(Result result)
         {
             var lenientTimeToLive = result.TimeToLive + Constants.Monitor.TimeToLiveLeniency;
-            var projectedResultLife = result.SentOn.AddMilliseconds(lenientTimeToLive);
+            var projectedResultLife = result.SentOn.AddMilliseconds(lenientTimeToLive.TotalMilliseconds);
 
             var model = new Monitor
             {
-                Name = result.SourceName,
-                TargetName = result.TargetName,
-                State = result.TargetState.ToString(),
-                Message = result.FriendlyMessage,
+                Name = result.Source.Name,
+                TargetName = result.Target.Name,
+                State = result.Target.State.ToString(),
+                Message = result.Message,
                 StaleAfter = projectedResultLife,
-                Icon = GetIcon(result.SourceType),
+                Icon = GetIcon(result.Source.Type),
                 Tags = result.Tags.ToList()
             };
 
-            if (result.Details != null)
-                model.Details = new Dictionary<string, string>(result.Details);
+            if (result.Metadata != null)
+                model.Details = new Dictionary<string, object>(result.Metadata);
             
             return model;
         }

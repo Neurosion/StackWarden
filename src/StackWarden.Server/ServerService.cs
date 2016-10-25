@@ -10,12 +10,12 @@ namespace StackWarden.Server
     public partial class StackWardenServerService : ServiceBase
     {
         private readonly ILog _log;
-        private readonly List<IMonitor> _monitors;
+        private readonly IMonitor[] _monitors;
 
         public StackWardenServerService(ILog log, IMonitor[] monitors)
         {
             _log = log.ThrowIfNull(nameof(log));
-            _monitors = new List<IMonitor>(monitors ?? new IMonitor[0]);
+            _monitors = monitors;
 
             InitializeComponent();
             ServiceName = "StackWarden.Server";

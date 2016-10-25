@@ -62,9 +62,9 @@ namespace StackWarden.Monitoring.Http
                     .ToList());
         }
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
-            result.TargetName = _address;
+            result.Target.Name = _address;
 
             try
             {
@@ -85,36 +85,36 @@ namespace StackWarden.Monitoring.Http
                 }
                 else
                 {
-                    result.TargetState = SeverityState.Error;
-                    result.FriendlyMessage = ex.Message;
+                    result.Target.State = SeverityState.Error;
+                    result.Message = ex.Message;
                 }
             }
             catch (Exception ex)
             {
                 Log.Error("Update failed.", ex);
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
+                result.Message = ex.ToDetailString();
             }
         }
 
-        private void Update(MonitorResult result, HttpWebResponse response)
+        private void Update(Result result, HttpWebResponse response)
         {
             if (response == null)
             {
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = "No response received.";
+                result.Target.State = SeverityState.Error;
+                result.Message = "No response received.";
             }
             else
             {
                 var code = response.StatusCode;
 
-                result.Details.Add("Status Code", code.ToExpandedString());
-                result.Details.Add("Status Description", response.StatusDescription);
+                result.Metadata.Add("Status Code", code.ToExpandedString());
+                result.Metadata.Add("Status Description", response.StatusDescription);
 
-                result.TargetState = SeverityStatusCodes.Where(x => x.Value.Contains(code))
+                result.Target.State = SeverityStatusCodes.Where(x => x.Value.Contains(code))
                                                         .Select(x => x.Key)
                                                         .FirstOrDefault();
-                result.FriendlyMessage = $"{(int)code}: {response.StatusDescription}";
+                result.Message = $"{(int)code}: {response.StatusDescription}";
             }
         }
     }

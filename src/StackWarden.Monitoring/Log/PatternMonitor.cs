@@ -27,11 +27,11 @@ namespace StackWarden.Monitoring.Log
             _logDirectoryPath = logDirectoryPath.ThrowIfNullOrWhiteSpace(nameof(logDirectoryPath));
         }
         
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
             var filesChanged = 0;
 
-            result.Details.Add("Root Path", _logDirectoryPath);
+            result.Metadata.Add("Root Path", _logDirectoryPath);
 
             try
             {
@@ -60,7 +60,7 @@ namespace StackWarden.Monitoring.Log
 
                                 foreach (var currentPair in PatternSeverities.Where(x => x.Key.IsMatch(currentLine)))
                                 {
-                                    result.Details.Add($"Line {index}", currentLine);
+                                    result.Metadata.Add($"Line {lineCount}", currentLine);
                                     UpdateState(result, currentPair.Value);
                                 }
                             });
@@ -69,11 +69,11 @@ namespace StackWarden.Monitoring.Log
                     }
                     catch (Exception ex)
                     {
-                        result.TargetState = SeverityState.Error;
-                        result.FriendlyMessage = $"Failed to process file '{currentFile.FullName}'";
-                        result.Details.Add("Exception", ex.ToDetailString());
+                        result.Target.State = SeverityState.Error;
+                        result.Message = $"Failed to process file '{currentFile.FullName}'";
+                        result.Metadata.Add("Exception", ex.ToDetailString());
 
-                        Log.Warn(result.FriendlyMessage, ex);
+                        Log.Warn(result.Message, ex);
                     }
                 }
 
@@ -81,14 +81,14 @@ namespace StackWarden.Monitoring.Log
             }
             catch (Exception ex)
             {
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = $"Failed to process files in  '{_logDirectoryPath}'";
-                result.Details.Add("Exception", ex.ToDetailString());
+                result.Target.State = SeverityState.Error;
+                result.Message = $"Failed to process files in  '{_logDirectoryPath}'";
+                result.Metadata.Add("Exception", ex.ToDetailString());
 
-                Log.Error(result.FriendlyMessage, ex);
+                Log.Error(result.Message, ex);
             }
 
-            result.Details.Add("Files Changed", filesChanged.ToString());
+            result.Metadata.Add("Files Changed", filesChanged.ToString());
         }
 
         private IEnumerable<FileInfo> GetFilesSinceLastUpdate()
@@ -99,18 +99,18 @@ namespace StackWarden.Monitoring.Log
                             .Where(x => x.LastWriteTime >= _lastUpdatedOn);
         }
 
-        private static void UpdateState(MonitorResult result, SeverityState lineSeverityState)
+        private static void UpdateState(Result result, SeverityState lineSeverityState)
         {
-            switch (result.TargetState)
+            switch (result.Target.State)
             {
                 case SeverityState.Warning:
                     if (lineSeverityState == SeverityState.Error)
-                        result.TargetState = lineSeverityState;
+                        result.Target.State = lineSeverityState;
                     break;
                 case SeverityState.Normal:
                     if (lineSeverityState == SeverityState.Error ||
                         lineSeverityState == SeverityState.Warning)
-                        result.TargetState = lineSeverityState;
+                        result.Target.State = lineSeverityState;
                     break;
                 default:
                     return;

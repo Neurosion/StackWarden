@@ -45,6 +45,16 @@ namespace StackWarden.Core.Extensions
                                                              });
         }
 
+        public static T[] ThrowIfNullOrEmpty<T>(this T[] source, string argumentName, string message = null)
+        {
+            return source.ThrowIf<ArgumentException, T[]>(source == null || !source.Any(),
+                                                          new[]
+                                                          {
+                                                              message ?? Configuration.Constants.Messages.Arguments.AtLeastOne(argumentName),
+                                                              argumentName
+                                                          });
+        }
+
         public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> source, string argumentName, string message = null)
         {
             return source.ThrowIf<ArgumentException, IEnumerable<T>>(source == null || !source.Any(), 

@@ -12,11 +12,11 @@ namespace StackWarden.Monitoring
     public abstract class Monitor : IMonitor
     {
         private readonly Timer _timer;
-        private readonly object _isProcesingLock = new object();
         private double _interval;
-        private bool _isProcessing;
 
-        public event Action<MonitorResult> Updated;
+        protected ILog Log { get; }
+
+        public event Action<Result> Updated;
 
         public List<string> Tags { get; } = new List<string>();
 
@@ -47,8 +47,7 @@ namespace StackWarden.Monitoring
         }
 
         public string Name { get; set; }
-        protected ILog Log { get; }
-
+        
         protected Monitor(ILog log, string name)
         {
             Log = log.ThrowIfNull(nameof(log));
@@ -74,35 +73,31 @@ namespace StackWarden.Monitoring
             _timer.Enabled = false;
         }
 
-        protected MonitorResult CreateResult()
+        protected Result CreateResult()
         {
-            return new MonitorResult
+            return new Result
             {
-                SourceType = GetType(),
-                SourceName = Name,
+                Source =
+                {
+                    Type = GetType(),
+                    Name = Name
+                },
+                Target =
+                {
+                    State = SeverityState.Normal,
+
+                },
                 Tags = Tags.ToArray(),
-                TargetState = SeverityState.Normal,
-                TimeToLive = Interval
+                TimeToLive = new TimeSpan(0, 0, 0, 0, (int)Interval)
             };
         }
 
         protected virtual void HandleUpdate()
         {
-            if (_isProcessing)
-            {
-                Log.Warn("Failed to update, still processing last update.");
-                return;
-            }
-
-            lock (_isProcesingLock)
-            {
-                _isProcessing = true;
-                HandleResult(Update());
-                _isProcessing = false;
-            }
+            HandleResult(Update());
         }
 
-        private MonitorResult Update()
+        private Result Update()
         {
             var result = CreateResult();
 
@@ -113,14 +108,16 @@ namespace StackWarden.Monitoring
             catch (Exception ex)
             {
                 Log.Error("Failed to update.", ex);
+                result.Target.State = SeverityState.Warning;
+                result.Message = $"Failed to update monitor. Reason: {ex.Message}";
             }
 
             return result;
         }
 
-        protected abstract void Update(MonitorResult result);
+        protected abstract void Update(Result result);
         
-        protected void HandleResult(MonitorResult result)
+        protected void HandleResult(Result result)
         {
             try
             {
@@ -128,7 +125,7 @@ namespace StackWarden.Monitoring
             }
             catch (Exception ex)
             {
-                Log.Error("Failed to raise Updated event.", ex);
+                Log.Error($"Failed to raise {nameof(Updated)} event.", ex);
             }
         }
     }

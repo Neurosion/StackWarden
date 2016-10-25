@@ -18,11 +18,11 @@ namespace StackWarden.Monitoring.Log
             public Dictionary<string, string> PatternSeverities { get; set; }
         }
 
-        public PatternMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public PatternMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Log.Pattern" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Log.Pattern" };
 
         protected override IEnumerable<IMonitor> BuildFromConfig(Configuration config)
         {

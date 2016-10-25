@@ -46,32 +46,32 @@ namespace StackWarden.Monitoring.Service
             _serviceName = serviceName.ThrowIfNullOrWhiteSpace(nameof(serviceName));
         }
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
-            result.TargetName = $"{_serviceName} on {_machineName}";
-            result.Details.Add("Service", _serviceName);
-            result.Details.Add("Machine", _machineName);
+            result.Target.Name = $"{_serviceName} on {_machineName}";
+            result.Metadata.Add("Service", _serviceName);
+            result.Metadata.Add("Machine", _machineName);
 
             try
             {
                 var serviceController = new ServiceController(_serviceName, _machineName);
                 var serviceStatus = serviceController.Status;
 
-                result.Details.Add("Status", serviceStatus.ToExpandedString());
+                result.Metadata.Add("Status", serviceStatus.ToExpandedString());
              
                 if (ErrorStatuses.Contains(serviceStatus))
-                    result.TargetState = SeverityState.Error;
+                    result.Target.State = SeverityState.Error;
                 else if (WarningStatuses.Contains(serviceStatus))
-                    result.TargetState = SeverityState.Warning;
+                    result.Target.State = SeverityState.Warning;
 
-                 result.FriendlyMessage = $"The service is {StateMessageSuffixMap[serviceStatus]}.";
+                 result.Message = $"The service is {StateMessageSuffixMap[serviceStatus]}.";
             }
             catch (Exception ex)
             {
                 Log.Error("Failed to update.", ex);
 
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
+                result.Message = ex.ToDetailString();
             }
         }
     }

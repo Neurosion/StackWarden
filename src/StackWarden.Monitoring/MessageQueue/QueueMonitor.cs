@@ -19,9 +19,9 @@ namespace StackWarden.Monitoring.MessageQueue
             _queuePath = queuePath.ThrowIfNullOrWhiteSpace(nameof(queuePath));
         }
 
-        protected override void Update(MonitorResult result)
+        protected override void Update(Result result)
         {
-            result.TargetName = _queuePath;
+            result.Target.Name = _queuePath;
 
             try
             {
@@ -31,11 +31,11 @@ namespace StackWarden.Monitoring.MessageQueue
             catch (Exception ex)
             {
                 Log.Error("Update failed.", ex);
-                result.TargetState = SeverityState.Error;
-                result.FriendlyMessage = ex.ToDetailString();
+                result.Target.State = SeverityState.Error;
+                result.Message = ex.ToDetailString();
             }
         }
 
-        protected abstract void Update(MessageQueue queue, MonitorResult result);
+        protected abstract void Update(MessageQueue queue, Result result);
     }
 }

@@ -18,7 +18,7 @@ namespace StackWarden.Monitoring.ResultHandling
             public SeverityState? NotificationThreshold { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Slack" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Slack" };
 
         public SlackResultHandlerFactory(string configPath, IConfigurationReader configurationReader) 
             :base(configPath, configurationReader)

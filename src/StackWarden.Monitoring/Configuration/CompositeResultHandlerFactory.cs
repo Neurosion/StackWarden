@@ -4,7 +4,7 @@ using StackWarden.Monitoring.ResultHandling;
 
 namespace StackWarden.Monitoring.Configuration
 {
-    public class CompositeResultHandlerFactory : CompositeConfigurationDrivenFactory<CompositeResultHandlerFactory.Configuration, IMonitorResultHandler>, IMonitorResultHandlerFactory
+    public class CompositeResultHandlerFactory : CompositeConfigurationDrivenFactory<CompositeResultHandlerFactory.Configuration, IResultHandler>, IResultHandlerFactory
     {
         public class Configuration : ICompositeConfiguration
         {
@@ -14,7 +14,7 @@ namespace StackWarden.Monitoring.Configuration
 
         protected override string ConfigExtension => "handlerconfig";
 
-        public CompositeResultHandlerFactory(string configPath, IConfigurationReader configurationReader, IEnumerable<IMonitorResultHandlerFactory> factories) 
+        public CompositeResultHandlerFactory(string configPath, IConfigurationReader configurationReader, IEnumerable<IResultHandlerFactory> factories) 
             :base(configPath, configurationReader, factories)
         { }
     }

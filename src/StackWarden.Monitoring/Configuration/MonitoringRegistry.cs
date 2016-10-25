@@ -36,7 +36,7 @@ namespace StackWarden.Monitoring.Configuration
         {
             For<IMonitorFactory>().Add<T>()
                                   .Ctor<string>("configPath").Is(configPath)
-                                  .Ctor<IMonitorResultHandlerFactory>().Is(c => c.GetInstance<CompositeResultHandlerFactory>("DefaultResultHandlerFactory"));
+                                  .Ctor<IResultHandlerFactory>().Is(c => c.GetInstance<CompositeResultHandlerFactory>("DefaultResultHandlerFactory"));
         }
 
         private void RegisterResultHandlerFactories()
@@ -55,9 +55,9 @@ namespace StackWarden.Monitoring.Configuration
         }
 
         private void RegisterResultHandlerFactory<T>(string configPath)
-            where T : class, IMonitorResultHandlerFactory
+            where T : class, IResultHandlerFactory
         {
-            For<IMonitorResultHandlerFactory>().Add<T>().Ctor<string>("configPath").Is(configPath);
+            For<IResultHandlerFactory>().Add<T>().Ctor<string>("configPath").Is(configPath);
         }
     }
 }

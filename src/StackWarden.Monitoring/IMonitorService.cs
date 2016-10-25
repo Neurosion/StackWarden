@@ -5,7 +5,7 @@ namespace StackWarden.Monitoring
     public interface IMonitorService
     {
         IEnumerable<IMonitor> GetAllMonitors();
-        IEnumerable<MonitorResult> GetLatestResults();
-        void Save(MonitorResult result);
+        IEnumerable<Result> GetLatestResults();
+        void Save(Result result);
     }
 }

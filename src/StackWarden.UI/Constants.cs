@@ -47,7 +47,7 @@ namespace StackWarden.UI
 
         public static class Monitor
         {
-            public static readonly int TimeToLiveLeniency = int.Parse(ConfigurationManager.AppSettings["Monitor.TimeToLive.Leniency"] ?? "0");
+            public static readonly TimeSpan TimeToLiveLeniency = TimeSpan.Parse(ConfigurationManager.AppSettings["Monitor.TimeToLive.Leniency"] ?? "0");
         }
     }
 }

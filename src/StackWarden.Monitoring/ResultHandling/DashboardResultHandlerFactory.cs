@@ -13,7 +13,7 @@ namespace StackWarden.Monitoring.ResultHandling
             public string HookAddress { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Dashboard" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Dashboard" };
 
         public DashboardResultHandlerFactory(string configPath, IConfigurationReader configurationReader) 
             :base(configPath, configurationReader)

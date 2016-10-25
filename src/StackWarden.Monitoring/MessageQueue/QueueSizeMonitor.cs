@@ -20,7 +20,7 @@ namespace StackWarden.Monitoring.MessageQueue
             :base(log, queuePath, $"MSMQ queue size monitor for {queuePath}")
         { }
 
-        protected override void Update(MessageQueue queue, MonitorResult result)
+        protected override void Update(MessageQueue queue, Result result)
         {
             var messageCounts = new Dictionary<string, int>();
             queue.MessageReadPropertyFilter.DestinationQueue = true;
@@ -39,16 +39,16 @@ namespace StackWarden.Monitoring.MessageQueue
             }
 
             var totalMessageCount = messageCounts.Sum(x => x.Value);
-            result.FriendlyMessage = $"The queue contains {totalMessageCount} messages.";
-            result.Details.Add("All Messages", totalMessageCount.ToString());
+            result.Message = $"The queue contains {totalMessageCount} messages.";
+            result.Metadata.Add("All Messages", totalMessageCount.ToString());
 
             foreach (var currentPair in messageCounts.OrderByDescending(x => x.Value))
-                result.Details.Add(currentPair.Key, currentPair.Value.ToString());
+                result.Metadata.Add(currentPair.Key, currentPair.Value.ToString());
 
             if (totalMessageCount >= ErrorThreshold)
-                result.TargetState = SeverityState.Error;
+                result.Target.State = SeverityState.Error;
             else if (totalMessageCount >= WarningThreshold)
-                result.TargetState = SeverityState.Warning;
+                result.Target.State = SeverityState.Warning;
         }
 
         private string GetMessageName(Message message)

@@ -9,11 +9,11 @@ namespace StackWarden.Monitoring.Configuration
         where TMonitor: IMonitor
         where TDefinition: IMonitorConfiguration
     {
-        private readonly IMonitorResultHandlerFactory _resultHandlerFactory;
+        private readonly IResultHandlerFactory _resultHandlerFactory;
 
         protected override string ConfigExtension => "monitorconfig";
 
-        protected MonitorConfigurationDrivenFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        protected MonitorConfigurationDrivenFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             : base(configPath, configurationReader)
         {
             _resultHandlerFactory = resultHandlerFactory.ThrowIfNull(nameof(resultHandlerFactory));
@@ -28,14 +28,14 @@ namespace StackWarden.Monitoring.Configuration
                 instance.Tags.AddRange(config.Tags);
 
             foreach (var currentHandler in config.Handlers.SelectMany(x => _resultHandlerFactory.Build(x)))
-                instance.Updated += currentHandler.Handle;
+                instance.Updated += r => currentHandler.Handle(r);
 
             if (!string.IsNullOrWhiteSpace(config.DisplayName))
                 instance.Name = config.DisplayName;
         }
 
         // Explicit IFactory<IMonitor> implementation
-        IEnumerable<string> IFactory<IMonitor>.SupportedValues => SupportedValues;
+        IEnumerable<string> IFactory<IMonitor>.SupportedTypeValues => SupportedTypeValues;
 
         IEnumerable<IMonitor> IFactory<IMonitor>.Build(string name)
         {

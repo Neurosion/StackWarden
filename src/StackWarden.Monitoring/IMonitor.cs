@@ -9,7 +9,7 @@ namespace StackWarden.Monitoring
         List<string> Tags { get; }
         double Interval { get; set; }
 
-        event Action<MonitorResult> Updated;
+        event Action<Result> Updated;
 
         void Start();
         void Stop();

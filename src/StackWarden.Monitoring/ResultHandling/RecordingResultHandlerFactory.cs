@@ -18,14 +18,14 @@ namespace StackWarden.Monitoring.ResultHandling
             public string[] Repositories { get; set; }
         }
 
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Record" };
+
         public RecordingResultHandlerFactory(string configPath, IConfigurationReader configurationReader, RepositoryFactory repositoryFactory)
             : base(configPath, configurationReader)
         {
             _repositoryFactory = repositoryFactory.ThrowIfNull(nameof(repositoryFactory));
         }
-
-        public override IEnumerable<string> SupportedValues => new [] { "Record" };
-
+        
         protected override IEnumerable<RecordingResultHandler> BuildFromConfig(Configuration config)
         {
             config.Repositories.ThrowIfNullOrEmpty(nameof(config.Repositories));

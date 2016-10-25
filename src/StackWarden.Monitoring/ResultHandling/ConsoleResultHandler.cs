@@ -3,15 +3,17 @@ using StackWarden.Core;
 
 namespace StackWarden.Monitoring.ResultHandling
 {
-    public class ConsoleResultHandler : IMonitorResultHandler
+    public class ConsoleResultHandler : IResultHandler
     {
         private readonly object _handleLock = new object();
 
-        public void Handle(MonitorResult result)
+        public string Name { get; set; }
+
+        public bool Handle(Result result)
         {
             lock (_handleLock)
             {
-                switch (result.TargetState)
+                switch (result.Target.State)
                 {
                     case SeverityState.Normal:
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -26,11 +28,13 @@ namespace StackWarden.Monitoring.ResultHandling
                         Console.ForegroundColor = ConsoleColor.Blue;
                         break;
                 }
-                Console.WriteLine($"Monitor: {result.SourceType}, Target: {result.TargetName}, State: {result.TargetState}");
+                Console.WriteLine($"Monitor: {result.Source.Type}, Target: {result.Target.Name}, State: {result.Target.State}");
 
-                if (!string.IsNullOrWhiteSpace(result.FriendlyMessage))
-                    Console.WriteLine($"\tDetails: {result.FriendlyMessage}");
+                if (!string.IsNullOrWhiteSpace(result.Message))
+                    Console.WriteLine($"\tDetails: {result.Message}");
             }
+
+            return true;
         }
     }
 }

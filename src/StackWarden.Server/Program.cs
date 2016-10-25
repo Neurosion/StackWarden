@@ -26,14 +26,14 @@ namespace StackWarden.Server
             var monitors = monitorFactory.Build().ToArray();
 #if DEBUG
 
-            Console.WriteLine($"Configured {monitors.Count()} monitors.");
+            Console.WriteLine($"Configured {monitors.Length} monitors.");
             Console.WriteLine(string.Join(Environment.NewLine, monitors.Select(x => x.Name)));
 
             var consoleResultHandler = new ConsoleResultHandler();
 
             foreach (var currentMonitor in monitors)
             {
-                currentMonitor.Updated += consoleResultHandler.Handle;
+                currentMonitor.Updated += r => consoleResultHandler.Handle(r);
                 currentMonitor.Start();
             }
 

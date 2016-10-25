@@ -18,9 +18,9 @@ namespace StackWarden.Monitoring.Http
             public Dictionary<string, List<string>> SeverityStatusCodes { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Http.Availability" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Http.Availability" };
 
-        public AvailabilityMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory) 
+        public AvailabilityMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory) 
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
         

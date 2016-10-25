@@ -12,9 +12,9 @@ namespace StackWarden.Monitoring.Database
             public string ConnectionString { get; set; }
         }
 
-        public override IEnumerable<string> SupportedValues => new[] { "Database.SQLPresence" };
+        public override IEnumerable<string> SupportedTypeValues => new[] { "Database.SQLPresence" };
 
-        public SQLPresenceMonitorFactory(string configPath, IConfigurationReader configurationReader, IMonitorResultHandlerFactory resultHandlerFactory)
+        public SQLPresenceMonitorFactory(string configPath, IConfigurationReader configurationReader, IResultHandlerFactory resultHandlerFactory)
             :base(configPath, configurationReader, resultHandlerFactory)
         { }
         

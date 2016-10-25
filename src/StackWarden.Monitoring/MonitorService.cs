@@ -27,17 +27,17 @@ namespace StackWarden.Monitoring
             return monitors;
         }
 
-        public IEnumerable<MonitorResult> GetLatestResults()
+        public IEnumerable<Result> GetLatestResults()
         {
-            var latestResults = _repository.Query<MonitorResult>()
-                                           .GroupBy(x => x.SourceName)
+            var latestResults = _repository.Query<Result>()
+                                           .GroupBy(x => x.Source != null ? x.Source.Name : null)
                                            .Select(x => x.FirstOrDefault())
                                            .Where(x => x != null);
 
             return latestResults;
         }
 
-        public void Save(MonitorResult result)
+        public void Save(Result result)
         {
             _repository.Save(result);
         }

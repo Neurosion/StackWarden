@@ -6,12 +6,14 @@ using StackWarden.Core.Extensions;
 
 namespace StackWarden.Monitoring.ResultHandling
 {
-    public abstract class WebHookResultHandler : IMonitorResultHandler
+    public abstract class WebHookResultHandler : IResultHandler
     {
         private readonly string _hookAddress;
 
         protected ILog Log { get; }
         protected Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+
+        public string Name { get; set; }
 
         protected WebHookResultHandler(ILog log, string hookAddress)
         {
@@ -19,15 +21,18 @@ namespace StackWarden.Monitoring.ResultHandling
             _hookAddress = hookAddress.ThrowIfNullOrWhiteSpace(nameof(hookAddress));
         }
 
-        protected abstract string FormatResult(MonitorResult result);
+        protected abstract string FormatResult(Result result);
 
-        protected virtual bool ShouldHandle(MonitorResult result)
+        protected virtual bool ShouldHandle(Result result)
         {
             return result != null;
         }
 
-        public void Handle(MonitorResult result)
+        public bool Handle(Result result)
         {
+            if (!ShouldHandle(result))
+                return false;
+
             try
             {
                 var formattedResult = FormatResult(result);
@@ -39,11 +44,15 @@ namespace StackWarden.Monitoring.ResultHandling
 
                     webClient.UploadString(_hookAddress, formattedResult);
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 Log.Error($"Failed to call web hook at '{_hookAddress}'. Exception:{ex.Message}", ex);
             }
+
+            return false;
         }
     }
 }
